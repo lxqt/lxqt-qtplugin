@@ -1,0 +1,12 @@
+libqtlxqt - LXDE-Qt system integration plugin for Qt.
+
+With this plugin, all Qt-based programs can adopt settings of
+LXDE-Qt, such as the icon theme.
+
+To let Qt load the plugin, export the environment variable
+QT_PLATFORM_PLUGIN=lxqt or DESKTOP_SESSION=lxqt.
+However, setting DESKTOP_SESSION might affect the behaviors
+of other tools such as xdg-tools. If this is not the desired
+effect, use QT_PLATFORM_PLUGIN.
+
+
