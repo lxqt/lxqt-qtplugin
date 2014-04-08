@@ -32,12 +32,20 @@
 #include <QApplication>
 #include <QWidget>
 
+#include <QMetaObject>
+#include <QMetaProperty>
+#include <QMetaEnum>
+#include <QToolBar>
+
 Q_EXPORT_PLUGIN2(LxQtGuiPlatformPlugin, LxQtGuiPlatformPlugin)
 
 LxQtGuiPlatformPlugin::LxQtGuiPlatformPlugin() {
   qDebug() << "LxQtGuiPlatformPlugin constructed";
   connect(LxQt::Settings::globalSettings(), SIGNAL(iconThemeChanged()), SLOT(onIconThemeChanged()));
   connect(LxQt::Settings::globalSettings(), SIGNAL(settingsChanged()), SLOT(onSettingsChanged()));
+
+  loadIconTheme();
+  loadSettings();
 }
 
 LxQtGuiPlatformPlugin::~LxQtGuiPlatformPlugin() {
@@ -54,7 +62,7 @@ QPalette LxQtGuiPlatformPlugin::palette() {
 
 QString LxQtGuiPlatformPlugin::systemIconThemeName() {
   qDebug() << "LxQtGuiPlatformPlugin::systemIconThemeName() is called";
-  return LxQt::Settings::globalSettings()->value("icon_theme").toString();
+  return iconTheme_;
 }
 
 /*
@@ -72,22 +80,48 @@ int LxQtGuiPlatformPlugin::platformHint(QGuiPlatformPlugin::PlatformHint hint) {
   int ret = 0;
   switch(hint) {
     case PH_ToolButtonStyle:
-      ret = Qt::ToolButtonTextBesideIcon;
+      ret = toolButtonStyle_;
       break;
     case PH_ToolBarIconSize:
+      break;
     case PH_ItemView_ActivateItemOnSingleClick:
+      ret = singleClickActivate_;
+      break;
     default:
       return QGuiPlatformPlugin::platformHint(hint);
   }
   return ret;
 }
 
+void LxQtGuiPlatformPlugin::loadIconTheme() {
+  iconTheme_ = LxQt::Settings::globalSettings()->value("icon_theme").toString();
+}
+
 void LxQtGuiPlatformPlugin::onIconThemeChanged() {
+  loadIconTheme();
+  notifyChange();
+}
+
+void LxQtGuiPlatformPlugin::loadSettings() {
+  // read other widget related settings form LxQt settings.
+  QByteArray tb_style = LxQt::Settings::globalSettings()->value("tool_button_style").toByteArray();
+  // convert toolbar style name to value
+  QMetaEnum me = QToolBar::staticMetaObject.property(QToolBar::staticMetaObject.indexOfProperty("toolButtonStyle")).enumerator();
+  toolButtonStyle_ = (Qt::ToolButtonStyle)me.keyToValue(tb_style.constData());
+  if(toolButtonStyle_ == -1)
+    toolButtonStyle_ = Qt::ToolButtonTextBesideIcon;
+
+  singleClickActivate_ = LxQt::Settings::globalSettings()->value("single_click_activate").toBool();
+}
+
+void LxQtGuiPlatformPlugin::onSettingsChanged() {
+  loadSettings();
+  notifyChange();
+}
+
+void LxQtGuiPlatformPlugin::notifyChange() {
   Q_FOREACH(QWidget* widget, QApplication::allWidgets()) {
     QEvent event(QEvent::StyleChange);
     QApplication::sendEvent(widget, &event);
   }
-}
-
-void LxQtGuiPlatformPlugin::onSettingsChanged() {
 }

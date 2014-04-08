@@ -62,7 +62,17 @@ public:
   virtual void colorDialogSetCurrentColor(QColorDialog *, const QColor &) {}
   */
 
+private:
+  void loadIconTheme();
+  void loadSettings();
+  void notifyChange();
+  
 private Q_SLOTS:
   void onIconThemeChanged();
   void onSettingsChanged();
+
+private:
+  QString iconTheme_;
+  Qt::ToolButtonStyle toolButtonStyle_;
+  bool singleClickActivate_;
 };
