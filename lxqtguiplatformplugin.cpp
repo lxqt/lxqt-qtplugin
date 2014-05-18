@@ -107,9 +107,11 @@ void LxQtGuiPlatformPlugin::loadSettings() {
   QByteArray tb_style = LxQt::Settings::globalSettings()->value("tool_button_style").toByteArray();
   // convert toolbar style name to value
   QMetaEnum me = QToolBar::staticMetaObject.property(QToolBar::staticMetaObject.indexOfProperty("toolButtonStyle")).enumerator();
-  toolButtonStyle_ = (Qt::ToolButtonStyle)me.keyToValue(tb_style.constData());
-  if(toolButtonStyle_ == -1)
+  int value = me.keyToValue(tb_style.constData());
+  if(value == -1)
     toolButtonStyle_ = Qt::ToolButtonTextBesideIcon;
+  else
+	toolButtonStyle_ = static_cast<Qt::ToolButtonStyle>(value);
 
   singleClickActivate_ = LxQt::Settings::globalSettings()->value("single_click_activate").toBool();
 }
