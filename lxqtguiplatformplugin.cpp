@@ -40,7 +40,7 @@
 Q_EXPORT_PLUGIN2(LxQtGuiPlatformPlugin, LxQtGuiPlatformPlugin)
 
 LxQtGuiPlatformPlugin::LxQtGuiPlatformPlugin() {
-  qDebug() << "LxQtGuiPlatformPlugin constructed";
+  // qDebug() << "LxQtGuiPlatformPlugin constructed";
   connect(LxQt::Settings::globalSettings(), SIGNAL(iconThemeChanged()), SLOT(onIconThemeChanged()));
   connect(LxQt::Settings::globalSettings(), SIGNAL(settingsChanged()), SLOT(onSettingsChanged()));
 
@@ -51,17 +51,19 @@ LxQtGuiPlatformPlugin::LxQtGuiPlatformPlugin() {
 LxQtGuiPlatformPlugin::~LxQtGuiPlatformPlugin() {
 }
 
+// actually, this is never called if style is specified in Trolltech.conf.
 QString LxQtGuiPlatformPlugin::styleName() {
-  qDebug() << "LxQtGuiPlatformPlugin::styleName() is called";
-  return "fusion";
+  // qDebug() << "LxQtGuiPlatformPlugin::styleName() is called";
+  return "Cleanlooks"; // by default, choose "Cleanlooks"
 }
 
+// actually, this is never called if a palette is specified in Trolltech.conf.
 QPalette LxQtGuiPlatformPlugin::palette() {
   return QGuiPlatformPlugin::palette();
 }
 
 QString LxQtGuiPlatformPlugin::systemIconThemeName() {
-  qDebug() << "LxQtGuiPlatformPlugin::systemIconThemeName() is called";
+  // qDebug() << "LxQtGuiPlatformPlugin::systemIconThemeName() is called";
   return iconTheme_;
 }
 
@@ -76,7 +78,7 @@ QStringList LxQtGuiPlatformPlugin::iconThemeSearchPaths() {
 */
 
 int LxQtGuiPlatformPlugin::platformHint(QGuiPlatformPlugin::PlatformHint hint) {
-  qDebug() << "LxQtGuiPlatformPlugin::platformHint() is called";
+  // qDebug() << "LxQtGuiPlatformPlugin::platformHint() is called";
   int ret = 0;
   switch(hint) {
     case PH_ToolButtonStyle:
