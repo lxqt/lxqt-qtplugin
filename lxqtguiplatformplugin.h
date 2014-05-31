@@ -27,7 +27,7 @@
 
 #include "qguiplatformplugin_p.h"
 #include <QtGlobal>
-#include <lxqt/LxQtSettings>
+#include <LXQt/Settings>
 
 class LxQtGuiPlatformPlugin : public QGuiPlatformPlugin {
   Q_OBJECT
