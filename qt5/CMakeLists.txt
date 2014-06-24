@@ -5,6 +5,8 @@ include_directories(
 )
 
 set(qtlxqt_SRCS
+  main.cpp
+  lxqtplatformtheme.cpp
 )
 
 add_library(qtlxqt SHARED ${qtlxqt_SRCS})

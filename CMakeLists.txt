@@ -19,6 +19,7 @@ else()
 
     find_package(LXQT REQUIRED)
 endif()
+include(${LXQT_USE_FILE})
 
 if (CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -Wl,-no-undefined -Wall")
