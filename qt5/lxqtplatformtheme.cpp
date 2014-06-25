@@ -61,8 +61,9 @@ void LXQtPlatformTheme::onIconThemeChanged() {
 }
 
 void LXQtPlatformTheme::loadSettings() {
+  LxQt::Settings* settings = const_cast<LxQt::GlobalSettings*>(LxQt::Settings::globalSettings());
   // read other widget related settings form LxQt settings.
-  QByteArray tb_style = LxQt::Settings::globalSettings()->value("tool_button_style").toByteArray();
+  QByteArray tb_style = settings->value("tool_button_style").toByteArray();
   // convert toolbar style name to value
   QMetaEnum me = QToolBar::staticMetaObject.property(QToolBar::staticMetaObject.indexOfProperty("toolButtonStyle")).enumerator();
   int value = me.keyToValue(tb_style.constData());
@@ -71,7 +72,19 @@ void LXQtPlatformTheme::loadSettings() {
   else
 	toolButtonStyle_ = static_cast<Qt::ToolButtonStyle>(value);
 
-  singleClickActivate_ = LxQt::Settings::globalSettings()->value("single_click_activate").toBool();
+  singleClickActivate_ = settings->value("single_click_activate").toBool();
+
+  // load Qt settings
+  settings->beginGroup(QLatin1String("Qt"));
+  // widget
+  QVariant style_ = settings->value(QLatin1String("style"), QLatin1String("fusion")).toString();
+  QVariant font_ = settings->value(QLatin1String("font"));
+  // mouse
+  QVariant doubleClickInterval_ = settings->value(QLatin1String("doubleClickInterval"));
+  QVariant wheelScrollLines_ = settings->value(QLatin1String("wheelScrollLines"));
+  // keyboard
+  QVariant cursorFlashTime_ = settings->value(QLatin1String("cursorFlashTime"));
+  settings->endGroup();
 }
 
 void LXQtPlatformTheme::onSettingsChanged() {
@@ -99,37 +112,82 @@ const QPalette *LXQtPlatformTheme::palette(Palette type) const {
     return new QPalette();
 }
 
-const QFont *LXQtPlatformTheme::font(Font type) const {
-    return NULL;
-}
 #endif
+
+const QFont *LXQtPlatformTheme::font(Font type) const {
+	// if(type == 
+    return QPlatformTheme::font(type);
+}
 
 QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
     qDebug() << "themeHint" << hint;
     switch (hint) {
+    case CursorFlashTime:
+        return cursorFlashTime_;
+    case KeyboardInputInterval:
+        break;
+    case MouseDoubleClickInterval:
+        return doubleClickInterval_;
+	case StartDragDistance:
+        break;
+	case StartDragTime:
+        break;
+	case KeyboardAutoRepeatRate:
+        break;
+	case PasswordMaskDelay:
+        break;
+	case StartDragVelocity:
+        break;
+	case TextCursorWidth:
+        break;
+	case DropShadow:
+        return QVariant(true);
+	case MaximumScrollBarDragDistance:
+        break;
+    case ToolButtonStyle:
+        return QVariant(toolButtonStyle_);
+	case ToolBarIconSize:
+        break;
+    case ItemViewActivateItemOnSingleClick:
+        return QVariant(singleClickActivate_);
     case SystemIconThemeName:
         qDebug() << "iconTheme" << iconTheme_;
         return iconTheme_;
+	case SystemIconFallbackThemeName:
+        break;
     case IconThemeSearchPaths: // FIXME: should use XDG_DATA_DIRS instead
         return QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QStringLiteral("icons"), QStandardPaths::LocateDirectory)
             << QStandardPaths::locate(QStandardPaths::HomeLocation, QStringLiteral(".icons"), QStandardPaths::LocateDirectory);
     case StyleNames: // FIXME: do not hard code fusion
         qDebug() << "StyleNames";
-        return QStringList() << "fusion";
-    case ToolButtonStyle: {
-        return QVariant(toolButtonStyle_);
-    }
-    case ToolBarIconSize:
+        return QStringList() << style_;
+	case WindowAutoPlacement:
         break;
-    case ItemViewActivateItemOnSingleClick:
-        return QVariant(singleClickActivate_);
-    case DropShadow:
-        return QVariant(true);
-    case DialogButtonBoxLayout:
+	case DialogButtonBoxLayout:
         break;
     case DialogButtonBoxButtonsHaveIcons:
         return QVariant(true);
-    case UiEffects:
+	case UseFullScreenForPopupMenu:
+        break;
+	case KeyboardScheme:
+        break;
+	case UiEffects:
+        break;
+	case SpellCheckUnderlineStyle:
+        break;
+	case TabAllWidgets:
+        break;
+	case IconPixmapSizes:
+        break;
+	case PasswordMaskCharacter:
+        break;
+	case DialogSnapToDefaultButton:
+        break;
+	case ContextMenuOnMouseRelease:
+        break;
+	case MousePressAndHoldInterval:
+        break;
+	case MouseDoubleClickDistance:
         break;
     default:
         break;

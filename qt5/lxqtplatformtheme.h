@@ -47,7 +47,7 @@ public:
 
     // virtual const QPalette *palette(Palette type = SystemPalette) const;
 
-    // virtual const QFont *font(Font type = SystemFont) const;
+    virtual const QFont *font(Font type = SystemFont) const;
 
     virtual QVariant themeHint(ThemeHint hint) const;
 
@@ -77,6 +77,15 @@ private:
     bool singleClickActivate_;
 
     // other Qt settings
+    // widget
+    QString style_;
+    QVariant font_;
+    // mouse
+    QVariant doubleClickInterval_;
+    QVariant wheelScrollLines_;
+    // keyboard
+    QVariant cursorFlashTime_;
+    
 };
 
 #endif // LXQTPLATFORMTHEME_H
