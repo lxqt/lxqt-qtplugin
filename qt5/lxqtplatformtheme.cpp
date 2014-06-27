@@ -41,6 +41,9 @@
 
 LXQtPlatformTheme::LXQtPlatformTheme() {
     // qDebug() << "LXQT Platform Theme loaded";
+    // FIXME: The plugin seems to be loaded before QApplication event loop is running.
+    // Monitor changes of config files does not work without a running event loop.
+    // We cannot use LxQt::Settings here and need to delay the change monitoring with a QTimer later.
     connect(LxQt::Settings::globalSettings(), SIGNAL(iconThemeChanged()), SLOT(onIconThemeChanged()));
     connect(LxQt::Settings::globalSettings(), SIGNAL(settingsChanged()), SLOT(onSettingsChanged()));
 
@@ -77,17 +80,18 @@ void LXQtPlatformTheme::loadSettings() {
   // load Qt settings
   settings->beginGroup(QLatin1String("Qt"));
   // widget
-  QVariant style_ = settings->value(QLatin1String("style"), QLatin1String("fusion")).toString();
-  QVariant font_ = settings->value(QLatin1String("font"));
+  style_ = settings->value(QLatin1String("style"), QLatin1String("fusion")).toString();
+  font_ = settings->value(QLatin1String("font"));
   // mouse
-  QVariant doubleClickInterval_ = settings->value(QLatin1String("doubleClickInterval"));
-  QVariant wheelScrollLines_ = settings->value(QLatin1String("wheelScrollLines"));
+  doubleClickInterval_ = settings->value(QLatin1String("doubleClickInterval"));
+  wheelScrollLines_ = settings->value(QLatin1String("wheelScrollLines"));
   // keyboard
-  QVariant cursorFlashTime_ = settings->value(QLatin1String("cursorFlashTime"));
+  cursorFlashTime_ = settings->value(QLatin1String("cursorFlashTime"));
   settings->endGroup();
 }
 
 void LXQtPlatformTheme::onSettingsChanged() {
+  qDebug() << "onSettingsChanged";
   loadSettings();
   notifyChange();
 }
@@ -97,6 +101,7 @@ void LXQtPlatformTheme::notifyChange() {
     QEvent event(QEvent::StyleChange);
     QApplication::sendEvent(widget, &event);
   }
+  qDebug() << "Notify change!!";
 }
 
 bool LXQtPlatformTheme::usePlatformNativeDialog(DialogType type) const {
@@ -120,7 +125,7 @@ const QFont *LXQtPlatformTheme::font(Font type) const {
 }
 
 QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
-    qDebug() << "themeHint" << hint;
+    // qDebug() << "themeHint" << hint;
     switch (hint) {
     case CursorFlashTime:
         return cursorFlashTime_;
@@ -128,66 +133,66 @@ QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
         break;
     case MouseDoubleClickInterval:
         return doubleClickInterval_;
-	case StartDragDistance:
+		case StartDragDistance:
         break;
-	case StartDragTime:
+		case StartDragTime:
         break;
-	case KeyboardAutoRepeatRate:
+		case KeyboardAutoRepeatRate:
         break;
-	case PasswordMaskDelay:
+		case PasswordMaskDelay:
         break;
-	case StartDragVelocity:
+		case StartDragVelocity:
         break;
-	case TextCursorWidth:
+		case TextCursorWidth:
         break;
-	case DropShadow:
+		case DropShadow:
         return QVariant(true);
-	case MaximumScrollBarDragDistance:
+		case MaximumScrollBarDragDistance:
         break;
     case ToolButtonStyle:
         return QVariant(toolButtonStyle_);
-	case ToolBarIconSize:
+		case ToolBarIconSize:
         break;
     case ItemViewActivateItemOnSingleClick:
         return QVariant(singleClickActivate_);
     case SystemIconThemeName:
-        qDebug() << "iconTheme" << iconTheme_;
+        // qDebug() << "iconTheme" << iconTheme_;
         return iconTheme_;
-	case SystemIconFallbackThemeName:
+		case SystemIconFallbackThemeName:
         break;
     case IconThemeSearchPaths: // FIXME: should use XDG_DATA_DIRS instead
         return QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QStringLiteral("icons"), QStandardPaths::LocateDirectory)
             << QStandardPaths::locate(QStandardPaths::HomeLocation, QStringLiteral(".icons"), QStandardPaths::LocateDirectory);
-    case StyleNames: // FIXME: do not hard code fusion
-        qDebug() << "StyleNames";
+    case StyleNames:
+        // qDebug() << "StyleNames";
         return QStringList() << style_;
-	case WindowAutoPlacement:
+		case WindowAutoPlacement:
         break;
-	case DialogButtonBoxLayout:
+		case DialogButtonBoxLayout:
         break;
     case DialogButtonBoxButtonsHaveIcons:
         return QVariant(true);
-	case UseFullScreenForPopupMenu:
+		case UseFullScreenForPopupMenu:
         break;
-	case KeyboardScheme:
+		case KeyboardScheme:
         break;
-	case UiEffects:
+		case UiEffects:
         break;
-	case SpellCheckUnderlineStyle:
+		case SpellCheckUnderlineStyle:
         break;
-	case TabAllWidgets:
+		case TabAllWidgets:
         break;
-	case IconPixmapSizes:
+		case IconPixmapSizes:
         break;
-	case PasswordMaskCharacter:
+		case PasswordMaskCharacter:
         break;
-	case DialogSnapToDefaultButton:
+		case DialogSnapToDefaultButton:
         break;
-	case ContextMenuOnMouseRelease:
+		case ContextMenuOnMouseRelease:
         break;
-	case MousePressAndHoldInterval:
+		case MousePressAndHoldInterval:
         break;
-	case MouseDoubleClickDistance:
+		case MouseDoubleClickDistance:
         break;
     default:
         break;
