@@ -28,9 +28,11 @@
 #ifndef LXQTPLATFORMTHEME_H
 #define LXQTPLATFORMTHEME_H
 
-#include <qpa/qplatformtheme.h>
+#include <qpa/qplatformtheme.h> // this private header is subject to changes
 #include <QtGlobal>
-#include <LXQt/Settings>
+#include <QVariant>
+#include <QString>
+#include <QFileSystemWatcher>
 
 class Q_GUI_EXPORT LXQtPlatformTheme : public QObject, public QPlatformTheme {
     Q_OBJECT
@@ -62,12 +64,11 @@ public:
     // virtual QString standardButtonText(int button) const;
 
 private:
-    void loadIconTheme();
     void loadSettings();
     void notifyChange();
-  
+
 private Q_SLOTS:
-    void onIconThemeChanged();
+    void initWatch();
     void onSettingsChanged();
 
 private:
@@ -79,13 +80,14 @@ private:
     // other Qt settings
     // widget
     QString style_;
-    QVariant font_;
+    QString font_;
     // mouse
     QVariant doubleClickInterval_;
     QVariant wheelScrollLines_;
     // keyboard
     QVariant cursorFlashTime_;
-    
+    QFileSystemWatcher *settingsWatcher_;
+    QString settingsFile_;
 };
 
 #endif // LXQTPLATFORMTHEME_H

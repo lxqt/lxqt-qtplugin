@@ -1,6 +1,5 @@
 include_directories(
   ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
-  ${LXQT_INCLUDE_DIRS}
   ${CMAKE_CURRENT_BINARY_DIR}
 )
 
@@ -13,7 +12,6 @@ add_library(qtlxqt SHARED ${qtlxqt_SRCS})
 
 target_link_libraries(qtlxqt
   Qt5::Widgets
-  ${LXQT_LIBRARIES}
 )
 
 # there is no standard way to get the plugin dir of Qt5 with cmake

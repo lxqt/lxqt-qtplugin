@@ -38,70 +38,83 @@
 #include <QMetaProperty>
 #include <QMetaEnum>
 #include <QToolBar>
+#include <QSettings>
+#include <QTimer>
+#include <QFileSystemWatcher>
 
-LXQtPlatformTheme::LXQtPlatformTheme() {
+LXQtPlatformTheme::LXQtPlatformTheme():
+    settingsWatcher_(NULL)
+{
     // qDebug() << "LXQT Platform Theme loaded";
-    // FIXME: The plugin seems to be loaded before QApplication event loop is running.
-    // Monitor changes of config files does not work without a running event loop.
-    // We cannot use LxQt::Settings here and need to delay the change monitoring with a QTimer later.
-    connect(LxQt::Settings::globalSettings(), SIGNAL(iconThemeChanged()), SLOT(onIconThemeChanged()));
-    connect(LxQt::Settings::globalSettings(), SIGNAL(settingsChanged()), SLOT(onSettingsChanged()));
-
-    loadIconTheme();
+    // When the plugin is loaded, it seems that the app is not yet running and
+    // QThread environment is not completely set up. So creating filesystem watcher
+    // does not work since it uses QSocketNotifier internally which can only be
+    // created within QThread thread. So let's schedule a idle handler to initialize
+    // the watcher in the main event loop.
     loadSettings();
+    QTimer::singleShot(0, this, SLOT(initWatch()));
 }
 
 LXQtPlatformTheme::~LXQtPlatformTheme() {
+    if(settingsWatcher_)
+        delete settingsWatcher_;
 }
 
-void LXQtPlatformTheme::loadIconTheme() {
-  iconTheme_ = LxQt::Settings::globalSettings()->value("icon_theme").toString();
-}
-
-void LXQtPlatformTheme::onIconThemeChanged() {
-  loadIconTheme();
-  notifyChange();
+void LXQtPlatformTheme::initWatch()
+{
+    settingsWatcher_ = new QFileSystemWatcher();
+    settingsWatcher_->addPath(settingsFile_);
+    connect(settingsWatcher_, SIGNAL(fileChanged(QString)), SLOT(onSettingsChanged()));
 }
 
 void LXQtPlatformTheme::loadSettings() {
-  LxQt::Settings* settings = const_cast<LxQt::GlobalSettings*>(LxQt::Settings::globalSettings());
-  // read other widget related settings form LxQt settings.
-  QByteArray tb_style = settings->value("tool_button_style").toByteArray();
-  // convert toolbar style name to value
-  QMetaEnum me = QToolBar::staticMetaObject.property(QToolBar::staticMetaObject.indexOfProperty("toolButtonStyle")).enumerator();
-  int value = me.keyToValue(tb_style.constData());
-  if(value == -1)
-    toolButtonStyle_ = Qt::ToolButtonTextBesideIcon;
-  else
-	toolButtonStyle_ = static_cast<Qt::ToolButtonStyle>(value);
+    // FIXME: it might be better to load from /etc/xdg/lxqt/lxqt.conf first
+    // to get some default values, and override by the user config file.
+    QSettings settings("lxqt", "lxqt");
+    settingsFile_ = settings.fileName();
 
-  singleClickActivate_ = settings->value("single_click_activate").toBool();
+    // icon theme
+    iconTheme_ = settings.value("icon_theme").toString();
 
-  // load Qt settings
-  settings->beginGroup(QLatin1String("Qt"));
-  // widget
-  style_ = settings->value(QLatin1String("style"), QLatin1String("fusion")).toString();
-  font_ = settings->value(QLatin1String("font"));
-  // mouse
-  doubleClickInterval_ = settings->value(QLatin1String("doubleClickInterval"));
-  wheelScrollLines_ = settings->value(QLatin1String("wheelScrollLines"));
-  // keyboard
-  cursorFlashTime_ = settings->value(QLatin1String("cursorFlashTime"));
-  settings->endGroup();
+    // read other widget related settings form LxQt settings.
+    QByteArray tb_style = settings.value("tool_button_style").toByteArray();
+    // convert toolbar style name to value
+    QMetaEnum me = QToolBar::staticMetaObject.property(QToolBar::staticMetaObject.indexOfProperty("toolButtonStyle")).enumerator();
+    int value = me.keyToValue(tb_style.constData());
+    if(value == -1)
+        toolButtonStyle_ = Qt::ToolButtonTextBesideIcon;
+    else
+        toolButtonStyle_ = static_cast<Qt::ToolButtonStyle>(value);
+
+    // single click activation
+    singleClickActivate_ = settings.value("single_click_activate").toBool();
+
+    // load Qt settings
+    settings.beginGroup(QLatin1String("Qt"));
+    // widget
+    style_ = settings.value(QLatin1String("style"), QLatin1String("fusion")).toString();
+    font_ = settings.value(QLatin1String("font")).toString();
+
+    // mouse
+    doubleClickInterval_ = settings.value(QLatin1String("doubleClickInterval"));
+    wheelScrollLines_ = settings.value(QLatin1String("wheelScrollLines"));
+
+    // keyboard
+    cursorFlashTime_ = settings.value(QLatin1String("cursorFlashTime"));
+    settings.endGroup();
 }
 
 void LXQtPlatformTheme::onSettingsChanged() {
-  qDebug() << "onSettingsChanged";
-  loadSettings();
-  notifyChange();
+    // qDebug() << "onSettingsChanged";
+    loadSettings();
+    notifyChange();
 }
 
 void LXQtPlatformTheme::notifyChange() {
-  Q_FOREACH(QWidget* widget, QApplication::allWidgets()) {
-    QEvent event(QEvent::StyleChange);
-    QApplication::sendEvent(widget, &event);
-  }
-  qDebug() << "Notify change!!";
+    Q_FOREACH(QWidget* widget, QApplication::allWidgets()) {
+        QEvent event(QEvent::StyleChange);
+        QApplication::sendEvent(widget, &event);
+    }
 }
 
 bool LXQtPlatformTheme::usePlatformNativeDialog(DialogType type) const {
@@ -120,7 +133,14 @@ const QPalette *LXQtPlatformTheme::palette(Palette type) const {
 #endif
 
 const QFont *LXQtPlatformTheme::font(Font type) const {
-	// if(type == 
+    /*
+    // qDebug() << "font" << type << font_;
+    if(type == SystemFont && !font_.isEmpty()) {
+        QFont* font = new QFont();
+        font->fromString(font_);
+        return font;
+    }
+    */
     return QPlatformTheme::font(type);
 }
 
