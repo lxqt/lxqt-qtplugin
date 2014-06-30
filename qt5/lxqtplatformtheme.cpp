@@ -41,6 +41,7 @@
 #include <QSettings>
 #include <QTimer>
 #include <QFileSystemWatcher>
+#include "qiconloader_p.h"
 
 LXQtPlatformTheme::LXQtPlatformTheme():
     settingsWatcher_(NULL)
@@ -74,7 +75,7 @@ void LXQtPlatformTheme::loadSettings() {
     settingsFile_ = settings.fileName();
 
     // icon theme
-    iconTheme_ = settings.value("icon_theme").toString();
+    iconTheme_ = settings.value("icon_theme", "oxygen").toString();
 
     // read other widget related settings form LxQt settings.
     QByteArray tb_style = settings.value("tool_button_style").toByteArray();
@@ -104,15 +105,32 @@ void LXQtPlatformTheme::loadSettings() {
     settings.endGroup();
 }
 
+// this is called whenever the config file is changed.
 void LXQtPlatformTheme::onSettingsChanged() {
     // qDebug() << "onSettingsChanged";
-    loadSettings();
-    notifyChange();
-}
 
-void LXQtPlatformTheme::notifyChange() {
+    // NOTE: in Qt4, Qt monitors the change of _QT_SETTINGS_TIMESTAMP root property and
+    // reload Trolltech.conf when the value is changed. Then, it automatically
+    // applies the new settings.
+    // Unfortunately, this is no longer the case in Qt5. Yes, yet another regression.
+    // We're free to provide our own platform plugin, but Qt5 does not
+    // update the settings and repaint the UI. We need to do it ourselves
+    // through dirty hacks and private Qt internal APIs.
+    QString oldStyle = style_;
+    QString oldIconTheme = iconTheme_;
+
+    loadSettings(); // reload the config file
+
+    if(style_ != oldStyle) // the widget style is changed
+        qApp->setStyle(style_); // ask Qt5 to apply the new style
+
+    if(iconTheme_ != oldIconTheme) // the icon theme is changed
+        QIconLoader::instance()->updateSystemTheme(); // this is a private internal API of Qt5.
+
+    // emit a ThemeChange event to all widgets
     Q_FOREACH(QWidget* widget, QApplication::allWidgets()) {
-        QEvent event(QEvent::StyleChange);
+        // Qt5 added a QEvent::ThemeChange event.
+        QEvent event(QEvent::ThemeChange);
         QApplication::sendEvent(widget, &event);
     }
 }
@@ -153,66 +171,66 @@ QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
         break;
     case MouseDoubleClickInterval:
         return doubleClickInterval_;
-		case StartDragDistance:
+    case StartDragDistance:
         break;
-		case StartDragTime:
+    case StartDragTime:
         break;
-		case KeyboardAutoRepeatRate:
+    case KeyboardAutoRepeatRate:
         break;
-		case PasswordMaskDelay:
+    case PasswordMaskDelay:
         break;
-		case StartDragVelocity:
+    case StartDragVelocity:
         break;
-		case TextCursorWidth:
+    case TextCursorWidth:
         break;
-		case DropShadow:
+    case DropShadow:
         return QVariant(true);
-		case MaximumScrollBarDragDistance:
+    case MaximumScrollBarDragDistance:
         break;
     case ToolButtonStyle:
         return QVariant(toolButtonStyle_);
-		case ToolBarIconSize:
+    case ToolBarIconSize:
         break;
     case ItemViewActivateItemOnSingleClick:
         return QVariant(singleClickActivate_);
     case SystemIconThemeName:
-        // qDebug() << "iconTheme" << iconTheme_;
+        qDebug() << "iconTheme" << iconTheme_;
         return iconTheme_;
-		case SystemIconFallbackThemeName:
-        break;
+    case SystemIconFallbackThemeName:
+        return "hicolor";
     case IconThemeSearchPaths: // FIXME: should use XDG_DATA_DIRS instead
         return QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QStringLiteral("icons"), QStandardPaths::LocateDirectory)
             << QStandardPaths::locate(QStandardPaths::HomeLocation, QStringLiteral(".icons"), QStandardPaths::LocateDirectory);
     case StyleNames:
         // qDebug() << "StyleNames";
         return QStringList() << style_;
-		case WindowAutoPlacement:
+    case WindowAutoPlacement:
         break;
-		case DialogButtonBoxLayout:
+    case DialogButtonBoxLayout:
         break;
     case DialogButtonBoxButtonsHaveIcons:
         return QVariant(true);
-		case UseFullScreenForPopupMenu:
+    case UseFullScreenForPopupMenu:
         break;
-		case KeyboardScheme:
+    case KeyboardScheme:
         break;
-		case UiEffects:
+    case UiEffects:
         break;
-		case SpellCheckUnderlineStyle:
+    case SpellCheckUnderlineStyle:
         break;
-		case TabAllWidgets:
+    case TabAllWidgets:
         break;
-		case IconPixmapSizes:
+    case IconPixmapSizes:
         break;
-		case PasswordMaskCharacter:
+    case PasswordMaskCharacter:
         break;
-		case DialogSnapToDefaultButton:
+    case DialogSnapToDefaultButton:
         break;
-		case ContextMenuOnMouseRelease:
+    case ContextMenuOnMouseRelease:
         break;
-		case MousePressAndHoldInterval:
+    case MousePressAndHoldInterval:
         break;
-		case MouseDoubleClickDistance:
+    case MouseDoubleClickDistance:
         break;
     default:
         break;

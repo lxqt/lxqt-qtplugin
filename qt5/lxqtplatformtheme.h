@@ -65,7 +65,6 @@ public:
 
 private:
     void loadSettings();
-    void notifyChange();
 
 private Q_SLOTS:
     void initWatch();
