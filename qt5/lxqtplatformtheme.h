@@ -33,6 +33,7 @@
 #include <QVariant>
 #include <QString>
 #include <QFileSystemWatcher>
+#include <QFont>
 
 class Q_GUI_EXPORT LXQtPlatformTheme : public QObject, public QPlatformTheme {
     Q_OBJECT
@@ -79,7 +80,10 @@ private:
     // other Qt settings
     // widget
     QString style_;
-    QString font_;
+    QString fontStr_;
+    QFont font_;
+    QString fixedFontStr_;
+    QFont fixedFont_;
     // mouse
     QVariant doubleClickInterval_;
     QVariant wheelScrollLines_;

@@ -69,9 +69,11 @@ void LXQtPlatformTheme::initWatch()
 }
 
 void LXQtPlatformTheme::loadSettings() {
-    // FIXME: it might be better to load from /etc/xdg/lxqt/lxqt.conf first
-    // to get some default values, and override by the user config file.
-    QSettings settings("lxqt", "lxqt");
+    // QSettings is really handy. It tries to read from /etc/xdg/lxqt/lxqt.conf
+    // as a fallback if a key is missing from the user config file ~/.config/lxqt/lxqt.conf.
+    // So we can customize the default values in /etc/xdg/lxqt/lxqt.conf and does
+    // not necessarily to hard code the default values here.
+    QSettings settings(QSettings::UserScope, "lxqt", "lxqt");
     settingsFile_ = settings.fileName();
 
     // icon theme
@@ -92,9 +94,23 @@ void LXQtPlatformTheme::loadSettings() {
 
     // load Qt settings
     settings.beginGroup(QLatin1String("Qt"));
-    // widget
+
+    // widget style
     style_ = settings.value(QLatin1String("style"), QLatin1String("fusion")).toString();
-    font_ = settings.value(QLatin1String("font")).toString();
+
+    // SystemFont
+    fontStr_ = settings.value(QLatin1String("font")).toString();
+    if(!fontStr_.isEmpty()) {
+        font_.fromString(fontStr_);
+        // qDebug() << "font: " << font_.toString();
+    }
+
+    // FixedFont
+    fixedFontStr_ = settings.value(QLatin1String("fixedFont")).toString();
+    if(!fixedFontStr_.isEmpty()) {
+        fixedFont_.fromString(fixedFontStr_);
+        // qDebug() << "fixedFont: " << fixedFont_.toString();
+    }
 
     // mouse
     doubleClickInterval_ = settings.value(QLatin1String("doubleClickInterval"));
@@ -118,6 +134,8 @@ void LXQtPlatformTheme::onSettingsChanged() {
     // through dirty hacks and private Qt internal APIs.
     QString oldStyle = style_;
     QString oldIconTheme = iconTheme_;
+    QString oldFont = fontStr_;
+    QString oldFixedFont = fixedFontStr_;
 
     loadSettings(); // reload the config file
 
@@ -126,6 +144,13 @@ void LXQtPlatformTheme::onSettingsChanged() {
 
     if(iconTheme_ != oldIconTheme) // the icon theme is changed
         QIconLoader::instance()->updateSystemTheme(); // this is a private internal API of Qt5.
+
+    // if font is changed
+    if(oldFont != fontStr_ || oldFixedFont != fixedFontStr_){
+        // FIXME: to my knowledge there is no way to ask Qt to reload the fonts.
+        // Should we call QApplication::setFont() to override the font?
+        // This does not work with QSS, though.
+    }
 
     // emit a ThemeChange event to all widgets
     Q_FOREACH(QWidget* widget, QApplication::allWidgets()) {
@@ -151,14 +176,12 @@ const QPalette *LXQtPlatformTheme::palette(Palette type) const {
 #endif
 
 const QFont *LXQtPlatformTheme::font(Font type) const {
-    /*
-    // qDebug() << "font" << type << font_;
-    if(type == SystemFont && !font_.isEmpty()) {
-        QFont* font = new QFont();
-        font->fromString(font_);
-        return font;
+    if(type == SystemFont && !fontStr_.isEmpty()) {
+        return &font_;
     }
-    */
+    else if(type == FixedFont && !fixedFontStr_.isEmpty()) {
+        return &fixedFont_;
+    }
     return QPlatformTheme::font(type);
 }
 
@@ -213,7 +236,7 @@ QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
     case UseFullScreenForPopupMenu:
         break;
     case KeyboardScheme:
-        break;
+        return QVariant(X11KeyboardScheme);
     case UiEffects:
         break;
     case SpellCheckUnderlineStyle:
