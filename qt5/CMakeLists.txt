@@ -16,19 +16,23 @@ target_link_libraries(qtlxqt
 
 # there is no standard way to get the plugin dir of Qt5 with cmake
 # The best way is get_target_property(QT_PLUGINS_DIR Qt5::QGtk2ThemePlugin LOCATION).
-# This directly returns the platformthemes dir.
-# However, I'm not sure if Qt5::QGtk2ThemePlugin exists in every distro
-# Let's use a stupid but safer method, which is well documented in Qt doc.
-foreach(plugin ${Qt5Gui_PLUGINS}) # iterate over all plugins
-	get_target_property(plugin_dir ${plugin} LOCATION)
-	if(plugin_dir)
-		# remove the filename part
-		get_filename_component(plugin_dir ${plugin_dir} PATH)
-		# go to parent dir (should be something like /usr/lib/qt/plugins)
-		get_filename_component(QT_PLUGINS_DIR ${plugin_dir} PATH)
-		break()
-	endif()
-endforeach()
-message(STATUS "Qt5 plugin directory:" ${QT_PLUGINS_DIR})
+# This directly returns the platformthemes dir. However, this does not work
+# in some distros, such as ubuntu.
+# Finally, I came up with a more reliable way by using qmake.
+get_target_property(QT_QMAKE_EXECUTABLE ${Qt5Core_QMAKE_EXECUTABLE} IMPORTED_LOCATION)
+if(NOT QT_QMAKE_EXECUTABLE)
+    message(FATAL_ERROR "qmake is not found.")
+endif()
+
+# execute the command "qmake -query QT_INSTALL_PLUGINS" to get the path of plugins dir.
+execute_process(COMMAND ${QT_QMAKE_EXECUTABLE} -query QT_INSTALL_PLUGINS
+    OUTPUT_VARIABLE QT_PLUGINS_DIR
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+if(QT_PLUGINS_DIR)
+    message(STATUS "Qt5 plugin directory:" ${QT_PLUGINS_DIR})
+else()
+    message(FATAL_ERROR "Qt5 plugin directory cannot be detected.")
+endif()
 
 install (TARGETS qtlxqt LIBRARY DESTINATION ${QT_PLUGINS_DIR}/platformthemes)
