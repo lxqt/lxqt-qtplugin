@@ -255,9 +255,9 @@ QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
     // this was introduced in Qt 5.3.
     case MousePressAndHoldInterval:
         break;
-#endif
     case MouseDoubleClickDistance:
         break;
+#endif
     default:
         break;
     }
