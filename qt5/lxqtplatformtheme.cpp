@@ -150,6 +150,18 @@ void LXQtPlatformTheme::onSettingsChanged() {
         // FIXME: to my knowledge there is no way to ask Qt to reload the fonts.
         // Should we call QApplication::setFont() to override the font?
         // This does not work with QSS, though.
+        //
+        // After reading the source code of Qt, I think the right method to call
+        // here is QApplicationPrivate::setSystemFont(). However, this is an
+        // internal API and should not be used. Let's call QApplication::setFont()
+        // instead since it approximately does the same thing.
+        // Internally, QApplication will emit QEvent::ApplicationFontChange so
+        // all of the widgets will update their fonts.
+        // FIXME: should we call the internal API: QApplicationPrivate::setFont() instead?
+        // QGtkStyle does this internally.
+        fixedFont_.fromString(fixedFontStr_); // FIXME: how to set this to the app?
+        if(font_.fromString(fontStr_))
+            QApplication::setFont(font_);
     }
 
     // emit a ThemeChange event to all widgets
