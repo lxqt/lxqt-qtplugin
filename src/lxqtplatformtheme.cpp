@@ -40,6 +40,8 @@
 #include <QToolBar>
 #include <QSettings>
 #include <QTimer>
+#include <QDir>
+#include <QFileInfo>
 #include <QFileSystemWatcher>
 #include "qiconloader_p.h"
 
@@ -237,9 +239,8 @@ QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
         return iconTheme_;
     case SystemIconFallbackThemeName:
         return "hicolor";
-    case IconThemeSearchPaths: // FIXME: should use XDG_DATA_DIRS instead
-        return QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QStringLiteral("icons"), QStandardPaths::LocateDirectory)
-            << QStandardPaths::locate(QStandardPaths::HomeLocation, QStringLiteral(".icons"), QStandardPaths::LocateDirectory);
+    case IconThemeSearchPaths:
+        return xdgIconThemePaths();
     case StyleNames:
         // qDebug() << "StyleNames";
         return QStringList() << style_;
@@ -278,4 +279,24 @@ QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
         break;
     }
     return QPlatformTheme::themeHint(hint);
+}
+
+// Helper to return the icon theme paths from XDG.
+QStringList LXQtPlatformTheme::xdgIconThemePaths() const
+{
+    QStringList paths;
+    // Add home directory first in search path
+    const QFileInfo homeIconDir(QDir::homePath() + QStringLiteral("/.icons"));
+    if (homeIconDir.isDir())
+        paths.prepend(homeIconDir.absoluteFilePath());
+
+    QString xdgDirString = QFile::decodeName(qgetenv("XDG_DATA_DIRS"));
+    if (xdgDirString.isEmpty())
+        xdgDirString = QLatin1String("/usr/local/share/:/usr/share/");
+    foreach (const QString &xdgDir, xdgDirString.split(QLatin1Char(':'))) {
+        const QFileInfo xdgIconsDir(xdgDir + QStringLiteral("/icons"));
+        if (xdgIconsDir.isDir())
+            paths.append(xdgIconsDir.absoluteFilePath());
+    }
+    return paths;
 }

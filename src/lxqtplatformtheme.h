@@ -91,6 +91,8 @@ private:
     QVariant cursorFlashTime_;
     QFileSystemWatcher *settingsWatcher_;
     QString settingsFile_;
+
+    QStringList xdgIconThemePaths() const;
 };
 
 #endif // LXQTPLATFORMTHEME_H
