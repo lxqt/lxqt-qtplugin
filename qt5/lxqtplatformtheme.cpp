@@ -101,7 +101,8 @@ void LXQtPlatformTheme::loadSettings() {
     // SystemFont
     fontStr_ = settings.value(QLatin1String("font")).toString();
     if(!fontStr_.isEmpty()) {
-        font_.fromString(fontStr_);
+        if(font_.fromString(fontStr_))
+            QApplication::setFont(font_); // it seems that we need to do this manually.
         // qDebug() << "font: " << font_.toString();
     }
 
@@ -188,7 +189,10 @@ const QPalette *LXQtPlatformTheme::palette(Palette type) const {
 #endif
 
 const QFont *LXQtPlatformTheme::font(Font type) const {
+	// qDebug() << "font()" << type << SystemFont;
     if(type == SystemFont && !fontStr_.isEmpty()) {
+		// NOTE: for some reason, this is not called by Qt when program startup.
+		// So we do QApplication::setFont() manually.
         return &font_;
     }
     else if(type == FixedFont && !fixedFontStr_.isEmpty()) {
