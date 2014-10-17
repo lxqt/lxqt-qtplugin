@@ -1,17 +1,17 @@
 include_directories(
-  ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
-  ${CMAKE_CURRENT_BINARY_DIR}
+    ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
+    "${CMAKE_CURRENT_BINARY_DIR}"
 )
 
 set(qtlxqt_SRCS
-  main.cpp
-  lxqtplatformtheme.cpp
+    main.cpp
+    lxqtplatformtheme.cpp
 )
 
 add_library(qtlxqt SHARED ${qtlxqt_SRCS})
 
 target_link_libraries(qtlxqt
-  Qt5::Widgets
+    Qt5::Widgets
 )
 
 # there is no standard way to get the plugin dir of Qt5 with cmake
@@ -30,9 +30,9 @@ execute_process(COMMAND ${QT_QMAKE_EXECUTABLE} -query QT_INSTALL_PLUGINS
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 if(QT_PLUGINS_DIR)
-    message(STATUS "Qt5 plugin directory:" ${QT_PLUGINS_DIR})
+    message(STATUS "Qt5 plugin directory:" "${QT_PLUGINS_DIR}")
 else()
     message(FATAL_ERROR "Qt5 plugin directory cannot be detected.")
 endif()
 
-install (TARGETS qtlxqt LIBRARY DESTINATION ${QT_PLUGINS_DIR}/platformthemes)
+install(TARGETS qtlxqt LIBRARY DESTINATION "${QT_PLUGINS_DIR}/platformthemes")
