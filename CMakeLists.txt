@@ -8,7 +8,7 @@ set(CMAKE_AUTOMOC ON)
 find_package(Qt5Widgets REQUIRED QUIET)
 find_package(Qt5LinguistTools REQUIRED QUIET)
 
-find_package(lxqt-qt5 REQUIRED QUIET)
+find_package(lxqt REQUIRED QUIET)
 
 include(${LXQT_USE_FILE})
 
