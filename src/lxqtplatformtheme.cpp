@@ -250,7 +250,7 @@ QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
     case ItemViewActivateItemOnSingleClick:
         return QVariant(singleClickActivate_);
     case SystemIconThemeName:
-        qDebug() << "iconTheme" << iconTheme_;
+        // qDebug() << "iconTheme" << iconTheme_;
         return iconTheme_;
     case SystemIconFallbackThemeName:
         return "hicolor";
