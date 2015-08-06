@@ -10,7 +10,7 @@ find_package(Qt5LinguistTools REQUIRED QUIET)
 
 find_package(lxqt REQUIRED QUIET)
 
-include(LXQtCompilerSettings)
+include(LXQtCompilerSettings NO_POLICY_SCOPE)
 
 add_subdirectory(src)
 
