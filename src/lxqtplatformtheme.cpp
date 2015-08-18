@@ -43,6 +43,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QFileSystemWatcher>
+#include <QStyle>
 #include "qiconloader_p.h"
 
 LXQtPlatformTheme::LXQtPlatformTheme():
@@ -157,7 +158,11 @@ void LXQtPlatformTheme::onSettingsChanged() {
     loadSettings(); // reload the config file
 
     if(style_ != oldStyle) // the widget style is changed
-        qApp->setStyle(style_); // ask Qt5 to apply the new style
+    {
+        // ask Qt5 to apply the new style
+        if (qobject_cast<QApplication *>(QCoreApplication::instance()))
+            QApplication::setStyle(style_);
+    }
 
     if(iconTheme_ != oldIconTheme) { // the icon theme is changed
         QIconLoader::instance()->updateSystemTheme(); // this is a private internal API of Qt5.
@@ -198,12 +203,15 @@ bool LXQtPlatformTheme::usePlatformNativeDialog(DialogType type) const {
 QPlatformDialogHelper *LXQtPlatformTheme::createPlatformDialogHelper(DialogType type) const {
     return 0;
 }
+#endif
 
 const QPalette *LXQtPlatformTheme::palette(Palette type) const {
-    return new QPalette();
-}
 
-#endif
+    if (type == QPlatformTheme::SystemPalette)
+        // the default constructor uses the default palette
+        return new QPalette;
+    return QPlatformTheme::palette(type);
+}
 
 const QFont *LXQtPlatformTheme::font(Font type) const {
 	// qDebug() << "font()" << type << SystemFont;
