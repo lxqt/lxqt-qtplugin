@@ -3,15 +3,34 @@ include_directories(
     "${CMAKE_CURRENT_BINARY_DIR}"
 )
 
+set(qtlxqt_HDRS
+    lxqtplatformtheme.h
+    lxqtsystemtrayicon.h
+    statusnotifieritem/statusnotifieritem.h
+    statusnotifieritem/dbustypes.h
+)
+
 set(qtlxqt_SRCS
     main.cpp
     lxqtplatformtheme.cpp
+    lxqtsystemtrayicon.cpp
+    statusnotifieritem/statusnotifieritem.cpp
+    statusnotifieritem/dbustypes.cpp
 )
 
-add_library(qtlxqt SHARED ${qtlxqt_SRCS})
+qt5_add_dbus_adaptor(qtlxqt_SRCS
+    statusnotifieritem/org.kde.StatusNotifierItem.xml
+    statusnotifieritem/statusnotifieritem.h
+    StatusNotifierItem
+)
+
+add_library(qtlxqt SHARED ${qtlxqt_HDRS} ${qtlxqt_SRCS})
 
 target_link_libraries(qtlxqt
     Qt5::Widgets
+    Qt5::DBus
+    dbusmenu-qt5
+    lxqt
 )
 
 # there is no standard way to get the plugin dir of Qt5 with cmake

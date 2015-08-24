@@ -28,6 +28,8 @@
 #ifndef LXQTPLATFORMTHEME_H
 #define LXQTPLATFORMTHEME_H
 
+#include "lxqtsystemtrayicon.h"
+
 #include <qpa/qplatformtheme.h> // this private header is subject to changes
 #include <QtGlobal>
 #include <QVariant>
@@ -53,6 +55,11 @@ public:
     virtual const QFont *font(Font type = SystemFont) const;
 
     virtual QVariant themeHint(ThemeHint hint) const;
+
+    QPlatformSystemTrayIcon *createPlatformSystemTrayIcon() const
+    {
+        return new LXQtSystemTrayIcon;
+    }
 
     // virtual QPixmap standardPixmap(StandardPixmap sp, const QSizeF &size) const;
     // virtual QPixmap fileIconPixmap(const QFileInfo &fileInfo, const QSizeF &size,
