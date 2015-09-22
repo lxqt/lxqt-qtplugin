@@ -97,12 +97,12 @@ void StatusNotifierItem::setIconByName(const QString &name)
 
 void StatusNotifierItem::setIconByPixmap(const QIcon &icon)
 {
-    // TODO: use icon cache key
-//     if (mIcon == icon)
-//         return;
+    if (mIconCacheKey == icon.cacheKey())
+        return;
 
-    mIconName.clear();
+    mIconCacheKey = icon.cacheKey();
     mIcon = iconToPixmapList(icon);
+    mIconName.clear();
     emit mAdaptor->NewIcon();
 }
 
@@ -117,12 +117,12 @@ void StatusNotifierItem::setOverlayIconByName(const QString &name)
 
 void StatusNotifierItem::setOverlayIconByPixmap(const QIcon &icon)
 {
-    // TODO: use icon cache key
-//     if (mOverlayIcon == icon)
-//         return;
+    if (mOverlayIconCacheKey == icon.cacheKey())
+        return;
 
-    mOverlayIconName.clear();
+    mOverlayIconCacheKey = icon.cacheKey();
     mOverlayIcon = iconToPixmapList(icon);
+    mOverlayIconName.clear();
     emit mAdaptor->NewOverlayIcon();
 }
 
@@ -137,12 +137,12 @@ void StatusNotifierItem::setAttentionIconByName(const QString &name)
 
 void StatusNotifierItem::setAttentionIconByPixmap(const QIcon &icon)
 {
-    // TODO: use icon cache key
-//     if (mAttentionIcon == icon)
-//         return;
+    if (mAttentionIconCacheKey == icon.cacheKey())
+        return;
 
-    mAttentionIconName.clear();
+    mAttentionIconCacheKey = icon.cacheKey();
     mAttentionIcon = iconToPixmapList(icon);
+    mAttentionIconName.clear();
     emit mAdaptor->NewAttentionIcon();
 }
 
@@ -175,12 +175,12 @@ void StatusNotifierItem::setToolTipIconByName(const QString &name)
 
 void StatusNotifierItem::setToolTipIconByPixmap(const QIcon &icon)
 {
-    // TODO: use icon cache key
-//     if (mTooltipIcon == icon)
-//         return;
+    if (mTooltipIconCacheKey == icon.cacheKey())
+        return;
 
-    mTooltipIconName.clear();
+    mTooltipIconCacheKey = icon.cacheKey();
     mTooltipIcon = iconToPixmapList(icon);
+    mTooltipIconName.clear();
     emit mAdaptor->NewToolTip();
 }
 
@@ -205,6 +205,14 @@ void StatusNotifierItem::Activate(int x, int y)
     emit activateRequested(QPoint(x, y));
 }
 
+void StatusNotifierItem::SecondaryActivate(int x, int y)
+{
+    if (mStatus == "NeedsAttention")
+        mStatus = "Active";
+
+    emit secondaryActivateRequested(QPoint(x, y));
+}
+
 void StatusNotifierItem::ContextMenu(int x, int y)
 {
     if (mMenu)
@@ -218,20 +226,20 @@ void StatusNotifierItem::ContextMenu(int x, int y)
 
 void StatusNotifierItem::Scroll(int delta, const QString &orientation)
 {
-    // TODO: finish this
+    Qt::Orientation orient = Qt::Vertical;
+    if (orientation.toLower() == "horizontal")
+        orient = Qt::Horizontal;
+
+    emit scrollRequested(delta, orient);
 }
 
-void StatusNotifierItem::SecondaryActivate(int x, int y)
+void StatusNotifierItem::showMessage(const QString& title, const QString& msg,
+                                     const QString& iconName, int secs)
 {
-    if (mStatus == "NeedsAttention")
-        mStatus = "Active";
-
-    emit secondaryActivateRequested(QPoint(x, y));
-}
-
-void StatusNotifierItem::showMessage(const QString& title, const QString& msg, const QString& iconName, int secs)
-{
-    // TODO: finish this
+    QDBusInterface interface("org.freedesktop.Notifications", "/org/freedesktop/Notifications",
+                             "org.freedesktop.Notifications", QDBusConnection::sessionBus());
+    interface.call("Notify", mTitle, (uint) 0, iconName, title,
+                   msg, QStringList(), QVariantMap(), secs);
 }
 
 IconPixmapList StatusNotifierItem::iconToPixmapList(const QIcon& icon)

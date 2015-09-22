@@ -128,17 +128,18 @@ public:
 
     void setContextMenu(QMenu *menu);
 
+public slots:
+    void Activate(int x, int y);
+    void SecondaryActivate(int x, int y);
+    void ContextMenu(int x, int y);
+    void Scroll(int delta, const QString &orientation);
+
+    void showMessage(const QString &title, const QString &msg, const QString &iconName, int secs);
+
 signals:
     void activateRequested(const QPoint &pos);
     void secondaryActivateRequested(const QPoint &pos);
-
-public slots:
-    void Activate(int x, int y);
-    void ContextMenu(int x, int y);
-    void Scroll(int delta, const QString &orientation);
-    void SecondaryActivate(int x, int y);
-
-    void showMessage(const QString &title, const QString &msg, const QString &iconName, int secs);
+    void scrollRequested(int delta, Qt::Orientation orientation);
 
 private:
     StatusNotifierItemAdaptor *mAdaptor;
@@ -151,10 +152,12 @@ private:
     // icons
     QString mIconName, mOverlayIconName, mAttentionIconName;
     IconPixmapList mIcon, mOverlayIcon, mAttentionIcon;
+    qint64 mIconCacheKey, mOverlayIconCacheKey, mAttentionIconCacheKey;
 
     // tooltip
     QString mTooltipTitle, mTooltipSubtitle, mTooltipIconName;
     IconPixmapList mTooltipIcon;
+    qint64 mTooltipIconCacheKey;
 
     // menu
     QMenu *mMenu;

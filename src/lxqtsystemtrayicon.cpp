@@ -302,7 +302,7 @@ void LXQtSystemTrayIcon::init()
 
         connect(mSni, &StatusNotifierItem::secondaryActivateRequested, [this](const QPoint &)
         {
-            emit activated(QPlatformSystemTrayIcon::Context);
+            emit activated(QPlatformSystemTrayIcon::MiddleClick);
         });
     }
 }
