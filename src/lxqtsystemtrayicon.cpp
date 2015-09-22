@@ -284,6 +284,17 @@ void LXQtSystemTrayIcon::init()
         mSni = new StatusNotifierItem(QString::number(QCoreApplication::applicationPid()), this);
         mSni->setTitle(QApplication::applicationDisplayName());
 
+        // default menu
+        QPlatformMenu *menu = createMenu();
+        menu->setParent(this);
+        QPlatformMenuItem *menuItem = menu->createMenuItem();
+        menuItem->setParent(menu);
+        menuItem->setText(tr("Quit"));
+        menuItem->setIcon(QIcon::fromTheme("application-exit"));
+        connect(menuItem, &QPlatformMenuItem::activated, qApp, &QApplication::quit);
+        menu->insertMenuItem(menuItem, nullptr);
+        updateMenu(menu);
+
         connect(mSni, &StatusNotifierItem::activateRequested, [this](const QPoint &)
         {
             emit activated(QPlatformSystemTrayIcon::Trigger);
