@@ -27,6 +27,8 @@
 
 #include "statusnotifieritem.h"
 #include "statusnotifieritemadaptor.h"
+#include <QDBusInterface>
+#include <QDBusServiceWatcher>
 #include <dbusmenu-qt5/dbusmenuexporter.h>
 
 int StatusNotifierItem::mServiceCounter = 0;
@@ -46,12 +48,15 @@ StatusNotifierItem::StatusNotifierItem(QString id, QObject *parent)
     QDBusConnection::sessionBus().registerService(mService);
     QDBusConnection::sessionBus().registerObject("/StatusNotifierItem", this);
 
-    // register to daemon
-    QDBusInterface interface("org.kde.StatusNotifierWatcher",
-                             "/StatusNotifierWatcher",
-                             "org.kde.StatusNotifierWatcher",
-                             QDBusConnection::sessionBus());
-    interface.asyncCall("RegisterStatusNotifierItem", mService);
+    registerToHost();
+
+    // monitor the watcher service in case the host restarts
+    QDBusServiceWatcher *watcher = new QDBusServiceWatcher("org.kde.StatusNotifierWatcher",
+                                                           QDBusConnection::sessionBus(),
+                                                           QDBusServiceWatcher::WatchForOwnerChange,
+                                                           this);
+    connect(watcher, &QDBusServiceWatcher::serviceOwnerChanged,
+            this, &StatusNotifierItem::onServiceOwnerChanged);
 }
 
 StatusNotifierItem::~StatusNotifierItem()
@@ -61,6 +66,22 @@ StatusNotifierItem::~StatusNotifierItem()
     QDBusConnection::sessionBus().disconnectFromBus(mService);
 
     delete mMenu;
+}
+
+void StatusNotifierItem::registerToHost()
+{
+    QDBusInterface interface("org.kde.StatusNotifierWatcher",
+                             "/StatusNotifierWatcher",
+                             "org.kde.StatusNotifierWatcher",
+                             QDBusConnection::sessionBus());
+    interface.asyncCall("RegisterStatusNotifierItem", mService);
+}
+
+void StatusNotifierItem::onServiceOwnerChanged(const QString& service, const QString& oldOwner,
+                                               const QString& newOwner)
+{
+    if (!newOwner.isEmpty())
+        registerToHost();
 }
 
 void StatusNotifierItem::setTitle(const QString &title)

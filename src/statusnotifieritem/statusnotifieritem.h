@@ -136,6 +136,14 @@ public slots:
 
     void showMessage(const QString &title, const QString &msg, const QString &iconName, int secs);
 
+private:
+    void registerToHost();
+    IconPixmapList iconToPixmapList(const QIcon &icon);
+
+private slots:
+    void onServiceOwnerChanged(const QString &service, const QString &oldOwner,
+                               const QString &newOwner);
+
 signals:
     void activateRequested(const QPoint &pos);
     void secondaryActivateRequested(const QPoint &pos);
@@ -164,8 +172,6 @@ private:
     QDBusObjectPath mMenuPath;
 
     static int mServiceCounter;
-
-    IconPixmapList iconToPixmapList(const QIcon &icon);
 };
 
 #endif
