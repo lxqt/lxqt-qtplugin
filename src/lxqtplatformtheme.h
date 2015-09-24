@@ -58,7 +58,14 @@ public:
 
     QPlatformSystemTrayIcon *createPlatformSystemTrayIcon() const
     {
-        return new LXQtSystemTrayIcon;
+        auto trayIcon = new LXQtSystemTrayIcon;
+        if (trayIcon->isSystemTrayAvailable())
+            return trayIcon;
+        else
+        {
+            delete trayIcon;
+            return nullptr;
+        }
     }
 
     // virtual QPixmap standardPixmap(StandardPixmap sp, const QSizeF &size) const;
