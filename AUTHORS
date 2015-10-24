@@ -5,7 +5,6 @@ Upstream Authors:
 Copyright:
     Copyright (c) 2013-2014 LXQt team
 
-License: GPL-2 and LGPL-2.1+
+License: LGPL-2.1+
 The full text of the licenses can be found in the 'COPYING' file.
-
-Based on source code from the Qt 4.8 Project by Digia Plc
+src/qiconloader_p.h is under LGPL-2.1 or 3 with Digia Qt LGPL Exception version 1.1
