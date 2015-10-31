@@ -1,4 +1,6 @@
-libqtlxqt - LXQt system integration plugin for Qt.
+# libqtlxqt
+
+LXQt system integration plugin for Qt.
 
 With this plugin, all Qt-based programs can adopt settings of
 LXQt, such as the icon theme.
