@@ -316,7 +316,8 @@ QStringList LXQtPlatformTheme::xdgIconThemePaths() const
     xdgDirs.append(xdgDataDirs);
 
     foreach (const QString &s, xdgDirs) {
-        foreach (const QString &xdgDir, s.split(QLatin1Char(':'))) {
+        const QStringList r = s.split(QLatin1Char(':'), QString::SkipEmptyParts);
+        foreach (const QString &xdgDir, r) {
             const QFileInfo xdgIconsDir(xdgDir + QStringLiteral("/icons"));
             if (xdgIconsDir.isDir())
                 paths.append(xdgIconsDir.absoluteFilePath());
