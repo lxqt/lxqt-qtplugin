@@ -298,18 +298,29 @@ QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
 QStringList LXQtPlatformTheme::xdgIconThemePaths() const
 {
     QStringList paths;
+    QStringList xdgDirs;
+
     // Add home directory first in search path
     const QFileInfo homeIconDir(QDir::homePath() + QStringLiteral("/.icons"));
     if (homeIconDir.isDir())
         paths.prepend(homeIconDir.absoluteFilePath());
 
-    QString xdgDirString = QFile::decodeName(qgetenv("XDG_DATA_DIRS"));
-    if (xdgDirString.isEmpty())
-        xdgDirString = QLatin1String("/usr/local/share/:/usr/share/");
-    foreach (const QString &xdgDir, xdgDirString.split(QLatin1Char(':'))) {
-        const QFileInfo xdgIconsDir(xdgDir + QStringLiteral("/icons"));
-        if (xdgIconsDir.isDir())
-            paths.append(xdgIconsDir.absoluteFilePath());
+    QString xdgDataHome = QFile::decodeName(qgetenv("XDG_DATA_HOME"));
+    if (xdgDataHome.isEmpty())
+        xdgDataHome = QDir::homePath() + QLatin1String("/.local/share");
+    xdgDirs.append(xdgDataHome);
+
+    QString xdgDataDirs = QFile::decodeName(qgetenv("XDG_DATA_DIRS"));
+    if (xdgDataDirs.isEmpty())
+        xdgDataDirs = QLatin1String("/usr/local/share/:/usr/share/");
+    xdgDirs.append(xdgDataDirs);
+
+    foreach (const QString &s, xdgDirs) {
+        foreach (const QString &xdgDir, s.split(QLatin1Char(':'))) {
+            const QFileInfo xdgIconsDir(xdgDir + QStringLiteral("/icons"));
+            if (xdgIconsDir.isDir())
+                paths.append(xdgIconsDir.absoluteFilePath());
+        }
     }
     return paths;
 }
