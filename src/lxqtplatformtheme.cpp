@@ -322,5 +322,6 @@ QStringList LXQtPlatformTheme::xdgIconThemePaths() const
                 paths.append(xdgIconsDir.absoluteFilePath());
         }
     }
+    paths.removeDuplicates();
     return paths;
 }
