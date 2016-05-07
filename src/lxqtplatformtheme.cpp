@@ -294,6 +294,11 @@ QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
     return QPlatformTheme::themeHint(hint);
 }
 
+QIconEngine *LXQtPlatformTheme::createIconEngine(const QString &iconName) const
+{
+    return new QIconLoaderEngine(iconName);
+}
+
 // Helper to return the icon theme paths from XDG.
 QStringList LXQtPlatformTheme::xdgIconThemePaths() const
 {

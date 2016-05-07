@@ -16,6 +16,7 @@ set(qtlxqt_SRCS
     lxqtsystemtrayicon.cpp
     statusnotifieritem/statusnotifieritem.cpp
     statusnotifieritem/dbustypes.cpp
+    qiconloader.cpp
 )
 
 qt5_add_dbus_adaptor(qtlxqt_SRCS
