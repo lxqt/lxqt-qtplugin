@@ -31,6 +31,7 @@ target_link_libraries(qtlxqt
     Qt5::DBus
     dbusmenu-qt5
     lxqt
+    Qt5XdgIconLoader
 )
 
 # there is no standard way to get the plugin dir of Qt5 with cmake
