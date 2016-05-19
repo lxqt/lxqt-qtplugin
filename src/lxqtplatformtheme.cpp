@@ -44,7 +44,7 @@
 #include <QFileInfo>
 #include <QFileSystemWatcher>
 #include <QStyle>
-#include "qiconloader_p.h"
+#include <private/xdgiconloader/xdgiconloader_p.h>
 
 LXQtPlatformTheme::LXQtPlatformTheme():
     settingsWatcher_(NULL)
@@ -162,7 +162,7 @@ void LXQtPlatformTheme::onSettingsChanged() {
     }
 
     if(iconTheme_ != oldIconTheme) { // the icon theme is changed
-        QIconLoader::instance()->updateSystemTheme(); // this is a private internal API of Qt5.
+        XdgIconLoader::instance()->updateSystemTheme(); // this is a private internal API of Qt5.
     }
 
     // if font is changed
@@ -294,6 +294,11 @@ QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
     return QPlatformTheme::themeHint(hint);
 }
 
+QIconEngine *LXQtPlatformTheme::createIconEngine(const QString &iconName) const
+{
+    return new XdgIconLoaderEngine(iconName);
+}
+ 
 // Helper to return the icon theme paths from XDG.
 QStringList LXQtPlatformTheme::xdgIconThemePaths() const
 {
