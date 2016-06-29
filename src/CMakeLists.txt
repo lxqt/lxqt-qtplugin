@@ -5,34 +5,50 @@ include_directories(
 
 set(qtlxqt_HDRS
     lxqtplatformtheme.h
-    lxqtsystemtrayicon.h
-    statusnotifieritem/statusnotifieritem.h
-    statusnotifieritem/dbustypes.h
 )
 
 set(qtlxqt_SRCS
     main.cpp
     lxqtplatformtheme.cpp
-    lxqtsystemtrayicon.cpp
-    statusnotifieritem/statusnotifieritem.cpp
-    statusnotifieritem/dbustypes.cpp
 )
 
-qt5_add_dbus_adaptor(qtlxqt_SRCS
-    statusnotifieritem/org.kde.StatusNotifierItem.xml
-    statusnotifieritem/statusnotifieritem.h
-    StatusNotifierItem
-)
+if (WITH_SNI)
+    list(APPEND qtlxqt_HDRS
+        lxqtsystemtrayicon.h
+        statusnotifieritem/statusnotifieritem.h
+        statusnotifieritem/dbustypes.h
+    )
+
+    list(APPEND qtlxqt_SRCS
+        lxqtsystemtrayicon.cpp
+        statusnotifieritem/statusnotifieritem.cpp
+        statusnotifieritem/dbustypes.cpp
+    )
+
+    qt5_add_dbus_adaptor(qtlxqt_SRCS
+        statusnotifieritem/org.kde.StatusNotifierItem.xml
+        statusnotifieritem/statusnotifieritem.h
+        StatusNotifierItem
+    )
+
+    add_definitions(-DWITH_SNI)
+endif ()
+
 
 add_library(qtlxqt SHARED ${qtlxqt_HDRS} ${qtlxqt_SRCS})
 
 target_link_libraries(qtlxqt
     Qt5::Widgets
-    Qt5::DBus
-    dbusmenu-qt5
     lxqt
     Qt5XdgIconLoader
 )
+
+if (WITH_SNI)
+    target_link_libraries(qtlxqt
+        Qt5::DBus
+        dbusmenu-qt5
+    )
+endif ()
 
 # there is no standard way to get the plugin dir of Qt5 with cmake
 # The best way is get_target_property(QT_PLUGINS_DIR Qt5::QGtk2ThemePlugin LOCATION).

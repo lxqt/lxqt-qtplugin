@@ -28,7 +28,9 @@
 #ifndef LXQTPLATFORMTHEME_H
 #define LXQTPLATFORMTHEME_H
 
+#if defined(WITH_SNI)
 #include "lxqtsystemtrayicon.h"
+#endif
 
 #include <qpa/qplatformtheme.h> // this private header is subject to changes
 #include <QtGlobal>
@@ -56,6 +58,7 @@ public:
 
     virtual QVariant themeHint(ThemeHint hint) const;
 
+#if defined(WITH_SNI)
     QPlatformSystemTrayIcon *createPlatformSystemTrayIcon() const
     {
         auto trayIcon = new LXQtSystemTrayIcon;
@@ -67,6 +70,7 @@ public:
             return nullptr;
         }
     }
+#endif
 
     // virtual QPixmap standardPixmap(StandardPixmap sp, const QSizeF &size) const;
     // virtual QPixmap fileIconPixmap(const QFileInfo &fileInfo, const QSizeF &size,

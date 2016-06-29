@@ -7,8 +7,23 @@ set(CMAKE_AUTOMOC ON)
 
 find_package(Qt5Widgets REQUIRED QUIET)
 find_package(Qt5LinguistTools REQUIRED QUIET)
-find_package(Qt5DBus REQUIRED QUIET)
-find_package(dbusmenu-qt5 REQUIRED QUIET)
+
+#Build with our StatusNotifierItem implementation?
+#if not defined by user, decide by Qt version
+if (NOT DEFINED WITH_SNI)
+    if (Qt5Widgets_VERSION VERSION_LESS 5.6.1)
+        set(WITH_SNI ON)
+    else ()
+        set(WITH_SNI OFF)
+    endif ()
+endif ()
+if (WITH_SNI)
+    message(STATUS "Building with our StatusNotifierItem implementation")
+    find_package(Qt5DBus REQUIRED QUIET)
+    find_package(dbusmenu-qt5 REQUIRED QUIET)
+else ()
+    message(STATUS "Building w/o our StatusNotifierItem implementation")
+endif ()
 
 find_package(lxqt REQUIRED QUIET)
 
