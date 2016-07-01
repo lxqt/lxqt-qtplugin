@@ -1,5 +1,12 @@
+#XXX: a hack for including private QtPlatformTheme headers (it is not exported in any *.cmake file)
+foreach (dir ${Qt5Core_PRIVATE_INCLUDE_DIRS})
+    string(REPLACE "QtCore" "QtPlatformSupport" replaced_dir "${dir}")
+    list(APPEND QtPlatformSupport_PRIVATE_INCLUDE_DIRS "${replaced_dir}")
+endforeach ()
+
 include_directories(
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
+    ${QtPlatformSupport_PRIVATE_INCLUDE_DIRS}
     "${CMAKE_CURRENT_BINARY_DIR}"
 )
 
@@ -41,6 +48,7 @@ target_link_libraries(qtlxqt
     Qt5::Widgets
     lxqt
     Qt5XdgIconLoader
+    Qt5PlatformSupport
 )
 
 if (WITH_SNI)

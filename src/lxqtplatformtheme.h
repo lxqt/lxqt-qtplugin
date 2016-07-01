@@ -32,14 +32,14 @@
 #include "lxqtsystemtrayicon.h"
 #endif
 
-#include <qpa/qplatformtheme.h> // this private header is subject to changes
+#include <QtPlatformSupport/private/qgenericunixthemes_p.h> // this private header is subject to changes
 #include <QtGlobal>
 #include <QVariant>
 #include <QString>
 #include <QFileSystemWatcher>
 #include <QFont>
 
-class Q_GUI_EXPORT LXQtPlatformTheme : public QObject, public QPlatformTheme {
+class Q_GUI_EXPORT LXQtPlatformTheme : public QObject, public QGenericUnixTheme {
     Q_OBJECT
 public:
     LXQtPlatformTheme();
