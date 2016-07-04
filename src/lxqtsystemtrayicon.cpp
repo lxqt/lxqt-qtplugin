@@ -286,7 +286,7 @@ void LXQtSystemTrayIcon::init()
 
         // default menu
         QPlatformMenu *menu = createMenu();
-        menu->setParent(this);
+        menu->setParent(mSni);
         QPlatformMenuItem *menuItem = menu->createMenuItem();
         menuItem->setParent(menu);
         menuItem->setText(tr("Quit"));

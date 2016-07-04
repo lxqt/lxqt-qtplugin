@@ -42,7 +42,8 @@ StatusNotifierItem::StatusNotifierItem(QString id, QObject *parent)
     mId(id),
     mTitle("Test"),
     mStatus("Active"),
-    mMenu(nullptr)
+    mMenu(nullptr),
+    mMenuExporter(nullptr)
 {
     // register service
     QDBusConnection::sessionBus().registerService(mService);
@@ -64,8 +65,6 @@ StatusNotifierItem::~StatusNotifierItem()
     QDBusConnection::sessionBus().unregisterObject("/StatusNotifierItem");
     QDBusConnection::sessionBus().unregisterService(mService);
     QDBusConnection::sessionBus().disconnectFromBus(mService);
-
-    delete mMenu;
 }
 
 void StatusNotifierItem::registerToHost()
@@ -82,6 +81,12 @@ void StatusNotifierItem::onServiceOwnerChanged(const QString& service, const QSt
 {
     if (!newOwner.isEmpty())
         registerToHost();
+}
+
+void StatusNotifierItem::onMenuDestroyed()
+{
+    mMenu = nullptr;
+    mMenuExporter = nullptr; //mMenu is a QObject parent of the mMenuExporter
 }
 
 void StatusNotifierItem::setTitle(const QString &title)
@@ -210,12 +215,20 @@ void StatusNotifierItem::setContextMenu(QMenu* menu)
     if (mMenu == menu)
         return;
 
-    delete mMenu;
+    if (nullptr != mMenu)
+    {
+        disconnect(mMenu, &QObject::destroyed, this, &StatusNotifierItem::onMenuDestroyed);
+    }
     mMenu = menu;
-    mMenu->setParent(nullptr);
 
     setMenuPath("/MenuBar");
-    new DBusMenuExporter(this->menu().path(), mMenu);
+    //Note: we need to destroy menu exporter before creating new one -> to free the DBus object path for new menu
+    delete mMenuExporter;
+    if (nullptr != mMenu)
+    {
+        connect(mMenu, &QObject::destroyed, this, &StatusNotifierItem::onMenuDestroyed);
+        mMenuExporter = new DBusMenuExporter{this->menu().path(), mMenu};
+    }
 }
 
 void StatusNotifierItem::Activate(int x, int y)

@@ -36,6 +36,7 @@
 #include "dbustypes.h"
 
 class StatusNotifierItemAdaptor;
+class DBusMenuExporter;
 
 class StatusNotifierItem : public QObject
 {
@@ -126,6 +127,9 @@ public:
         return tt;
     }
 
+    /*!
+     * \Note: we don't take ownership for the \param menu
+     */
     void setContextMenu(QMenu *menu);
 
 public slots:
@@ -143,6 +147,7 @@ private:
 private slots:
     void onServiceOwnerChanged(const QString &service, const QString &oldOwner,
                                const QString &newOwner);
+    void onMenuDestroyed();
 
 signals:
     void activateRequested(const QPoint &pos);
@@ -170,6 +175,7 @@ private:
     // menu
     QMenu *mMenu;
     QDBusObjectPath mMenuPath;
+    DBusMenuExporter *mMenuExporter;
 
     static int mServiceCounter;
 };
