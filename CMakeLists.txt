@@ -11,6 +11,7 @@ find_package(Qt5DBus REQUIRED QUIET)
 find_package(dbusmenu-qt5 REQUIRED QUIET)
 
 find_package(lxqt REQUIRED QUIET)
+find_package(Qt5XdgIconLoader REQUIRED QUIET)
 
 include(LXQtCompilerSettings NO_POLICY_SCOPE)
 
