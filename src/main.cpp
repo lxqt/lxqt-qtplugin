@@ -30,6 +30,8 @@
 #include <qpa/qplatformthemeplugin.h>
 #include "lxqtplatformtheme.h"
 
+#include <QtGui/private/qiconloader_p.h>
+
 QT_BEGIN_NAMESPACE
 
 class LXQtPlatformThemePlugin: public QPlatformThemePlugin {
@@ -43,6 +45,14 @@ QPlatformTheme *LXQtPlatformThemePlugin::create(const QString &key, const QStrin
     if (!key.compare(QLatin1String("lxqt"), Qt::CaseInsensitive))
         return new LXQtPlatformTheme();
     return NULL;
+}
+
+// We cannot call QIconLoader in lxqtplatformtheme.cpp because XdgIconLoader contains the same
+// class name so including both of qiconloader_p.h and XdgIconLoader create a name clash.
+// Let's call QIconLoader::updateSystemTheme() here instead.
+void updateQIconLoader() {
+  // this is a private internal API of Qt5.
+  QIconLoader::instance()->updateSystemTheme();
 }
 
 QT_END_NAMESPACE
