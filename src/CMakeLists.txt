@@ -30,7 +30,6 @@ target_link_libraries(qtlxqt
     Qt5::Widgets
     Qt5::DBus
     dbusmenu-qt5
-    lxqt
     Qt5XdgIconLoader
 )
 
