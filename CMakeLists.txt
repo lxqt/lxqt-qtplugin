@@ -3,7 +3,7 @@ project(lxqt-qtplugin)
 
 include(GNUInstallDirs)
 
-set(LXQTBT_MINIMUM_VERSION "0.1.0")
+set(LXQTBT_MINIMUM_VERSION "0.3.0")
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
