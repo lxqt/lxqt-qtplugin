@@ -43,17 +43,23 @@ StatusNotifierItem::StatusNotifierItem(QString id, QObject *parent)
     mTitle("Test"),
     mStatus("Active"),
     mMenu(nullptr),
-    mMenuExporter(nullptr)
+    mMenuExporter(nullptr),
+    mSessionBus(QDBusConnection::connectToBus(QDBusConnection::SessionBus, mService))
 {
+    // Separate DBus connection to the session bus is created, because QDbus does not provide
+    // a way to register different objects for different services with the same paths.
+    // For status notifiers we need different /StatusNotifierItem for each service.
+
     // register service
-    QDBusConnection::sessionBus().registerService(mService);
-    QDBusConnection::sessionBus().registerObject("/StatusNotifierItem", this);
+
+    mSessionBus.registerService(mService);
+    mSessionBus.registerObject(QLatin1String("/StatusNotifierItem"), this);
 
     registerToHost();
 
     // monitor the watcher service in case the host restarts
     QDBusServiceWatcher *watcher = new QDBusServiceWatcher("org.kde.StatusNotifierWatcher",
-                                                           QDBusConnection::sessionBus(),
+                                                           mSessionBus,
                                                            QDBusServiceWatcher::WatchForOwnerChange,
                                                            this);
     connect(watcher, &QDBusServiceWatcher::serviceOwnerChanged,
@@ -62,9 +68,9 @@ StatusNotifierItem::StatusNotifierItem(QString id, QObject *parent)
 
 StatusNotifierItem::~StatusNotifierItem()
 {
-    QDBusConnection::sessionBus().unregisterObject("/StatusNotifierItem");
-    QDBusConnection::sessionBus().unregisterService(mService);
-    QDBusConnection::sessionBus().disconnectFromBus(mService);
+    mSessionBus.unregisterObject(QLatin1String("/StatusNotifierItem"));
+    mSessionBus.unregisterService(mService);
+    QDBusConnection::disconnectFromBus(mService);
 }
 
 void StatusNotifierItem::registerToHost()
@@ -72,7 +78,7 @@ void StatusNotifierItem::registerToHost()
     QDBusInterface interface("org.kde.StatusNotifierWatcher",
                              "/StatusNotifierWatcher",
                              "org.kde.StatusNotifierWatcher",
-                             QDBusConnection::sessionBus());
+                             mSessionBus);
     interface.asyncCall("RegisterStatusNotifierItem", mService);
 }
 
@@ -227,7 +233,7 @@ void StatusNotifierItem::setContextMenu(QMenu* menu)
     if (nullptr != mMenu)
     {
         connect(mMenu, &QObject::destroyed, this, &StatusNotifierItem::onMenuDestroyed);
-        mMenuExporter = new DBusMenuExporter{this->menu().path(), mMenu};
+        mMenuExporter = new DBusMenuExporter{this->menu().path(), mMenu, mSessionBus};
     }
 }
 
@@ -271,7 +277,7 @@ void StatusNotifierItem::showMessage(const QString& title, const QString& msg,
                                      const QString& iconName, int secs)
 {
     QDBusInterface interface("org.freedesktop.Notifications", "/org/freedesktop/Notifications",
-                             "org.freedesktop.Notifications", QDBusConnection::sessionBus());
+                             "org.freedesktop.Notifications", mSessionBus);
     interface.call("Notify", mTitle, (uint) 0, iconName, title,
                    msg, QStringList(), QVariantMap(), secs);
 }
