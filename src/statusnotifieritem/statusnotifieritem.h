@@ -32,6 +32,7 @@
 #include <QObject>
 #include <QIcon>
 #include <QMenu>
+#include <QDBusConnection>
 
 #include "dbustypes.h"
 
@@ -176,6 +177,7 @@ private:
     QMenu *mMenu;
     QDBusObjectPath mMenuPath;
     DBusMenuExporter *mMenuExporter;
+    QDBusConnection mSessionBus;
 
     static int mServiceCounter;
 };
