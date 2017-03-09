@@ -202,14 +202,6 @@ QPlatformDialogHelper *LXQtPlatformTheme::createPlatformDialogHelper(DialogType 
 }
 #endif
 
-const QPalette *LXQtPlatformTheme::palette(Palette type) const {
-
-    if (type == QPlatformTheme::SystemPalette)
-        // the default constructor uses the default palette
-        return new QPalette;
-    return QPlatformTheme::palette(type);
-}
-
 const QFont *LXQtPlatformTheme::font(Font type) const {
     if(type == SystemFont && !fontStr_.isEmpty()) {
         // NOTE: for some reason, this is not called by Qt when program startup.

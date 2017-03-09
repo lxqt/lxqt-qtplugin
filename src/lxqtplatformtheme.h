@@ -50,7 +50,7 @@ public:
     virtual bool usePlatformNativeDialog(DialogType type) const;
     // virtual QPlatformDialogHelper *createPlatformDialogHelper(DialogType type) const;
 
-    virtual const QPalette *palette(Palette type = SystemPalette) const;
+    // virtual const QPalette *palette(Palette type = SystemPalette) const;
 
     virtual const QFont *font(Font type = SystemFont) const;
 
