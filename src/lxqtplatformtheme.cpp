@@ -184,6 +184,8 @@ void LXQtPlatformTheme::onSettingsChanged() {
             QApplication::setFont(font_);
     }
 
+    QApplication::setWheelScrollLines(wheelScrollLines_.toInt());
+
     // emit a ThemeChange event to all widgets
     Q_FOREACH(QWidget* widget, QApplication::allWidgets()) {
         // Qt5 added a QEvent::ThemeChange event.
@@ -279,6 +281,9 @@ QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
     case MousePressAndHoldInterval:
         break;
     case MouseDoubleClickDistance:
+        break;
+    case WheelScrollLines:
+        return wheelScrollLines_;
         break;
     default:
         break;
