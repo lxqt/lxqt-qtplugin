@@ -24,7 +24,7 @@ qt5_add_dbus_adaptor(qtlxqt_SRCS
     StatusNotifierItem
 )
 
-add_library(qtlxqt SHARED ${qtlxqt_HDRS} ${qtlxqt_SRCS})
+add_library(qtlxqt MODULE ${qtlxqt_HDRS} ${qtlxqt_SRCS})
 
 target_link_libraries(qtlxqt
     Qt5::Widgets
