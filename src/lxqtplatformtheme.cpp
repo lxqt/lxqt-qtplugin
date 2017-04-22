@@ -44,7 +44,9 @@
 #include <QFileInfo>
 #include <QFileSystemWatcher>
 #include <QStyle>
+
 #include <private/xdgiconloader/xdgiconloader_p.h>
+
 
 LXQtPlatformTheme::LXQtPlatformTheme():
     settingsWatcher_(NULL)
@@ -122,6 +124,9 @@ void LXQtPlatformTheme::loadSettings() {
     settings.endGroup();
 }
 
+// defined in main.cpp
+void updateQIconLoader();
+
 // this is called whenever the config file is changed.
 void LXQtPlatformTheme::onSettingsChanged() {
     // D*mn! yet another Qt 5.4 regression!!!
@@ -162,7 +167,9 @@ void LXQtPlatformTheme::onSettingsChanged() {
     }
 
     if(iconTheme_ != oldIconTheme) { // the icon theme is changed
-        XdgIconLoader::instance()->updateSystemTheme(); // this is a private internal API of Qt5.
+        // ask QIconLoader and XdgIconLoader to update the cached icon theme name.
+        updateQIconLoader();
+        XdgIconLoader::instance()->updateSystemTheme();
     }
 
     // if font is changed
