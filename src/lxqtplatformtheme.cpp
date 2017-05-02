@@ -47,7 +47,8 @@
 #include <private/xdgiconloader/xdgiconloader_p.h>
 
 LXQtPlatformTheme::LXQtPlatformTheme():
-    settingsWatcher_(NULL)
+    iconFollowColorScheme_(true)
+    , settingsWatcher_(NULL)
 {
     // When the plugin is loaded, it seems that the app is not yet running and
     // QThread environment is not completely set up. So creating filesystem watcher
@@ -80,6 +81,7 @@ void LXQtPlatformTheme::loadSettings() {
 
     // icon theme
     iconTheme_ = settings.value("icon_theme", "oxygen").toString();
+    iconFollowColorScheme_ = settings.value("icon_follow_color_scheme", iconFollowColorScheme_).toBool();
 
     // read other widget related settings form LxQt settings.
     QByteArray tb_style = settings.value("tool_button_style").toByteArray();
@@ -164,6 +166,7 @@ void LXQtPlatformTheme::onSettingsChanged() {
     if(iconTheme_ != oldIconTheme) { // the icon theme is changed
         XdgIconLoader::instance()->updateSystemTheme(); // this is a private internal API of Qt5.
     }
+    XdgIconLoader::instance()->setFollowColorScheme(iconFollowColorScheme_);
 
     // if font is changed
     if(oldFont != fontStr_ || oldFixedFont != fixedFontStr_){
