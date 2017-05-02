@@ -90,6 +90,7 @@ private:
     QString iconTheme_;
     Qt::ToolButtonStyle toolButtonStyle_;
     bool singleClickActivate_;
+    bool iconFollowColorScheme_;
 
     // other Qt settings
     // widget
