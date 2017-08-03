@@ -84,6 +84,8 @@ QList<QUrl> LXQtFileDialogHelper::selectedFiles() const {
 
 void LXQtFileDialogHelper::setFilter() {
     // FIXME: what's this?
+    // The gtk+ 3 file dialog helper in Qt5 update options in this method.
+    applyOptions();
 }
 
 void LXQtFileDialogHelper::selectMimeTypeFilter(const QString& filter) {
@@ -106,7 +108,7 @@ bool LXQtFileDialogHelper::isSupportedUrl(const QUrl& url) const {
     return dlg_->isSupportedUrl(url);
 }
 
-void LXQtFileDialogHelper::initDialog() {
+void LXQtFileDialogHelper::applyOptions() {
     auto& opt = options();
     dlg_->setFilter(opt->filter());
     dlg_->setViewMode(opt->viewMode() == QFileDialog::Detail ? Fm::FolderView::DetailedListMode : Fm::FolderView::CompactMode);

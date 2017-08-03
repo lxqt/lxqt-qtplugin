@@ -36,7 +36,7 @@ public:
     bool isSupportedUrl(const QUrl &url) const override;
 
 private:
-    void initDialog();
+    void applyOptions();
 
 private:
     std::unique_ptr<Fm::FileDialog> dlg_;
