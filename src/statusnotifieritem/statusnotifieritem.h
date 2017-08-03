@@ -133,7 +133,7 @@ public:
      */
     void setContextMenu(QMenu *menu);
 
-public slots:
+public Q_SLOTS:
     void Activate(int x, int y);
     void SecondaryActivate(int x, int y);
     void ContextMenu(int x, int y);
@@ -145,12 +145,12 @@ private:
     void registerToHost();
     IconPixmapList iconToPixmapList(const QIcon &icon);
 
-private slots:
+private Q_SLOTS:
     void onServiceOwnerChanged(const QString &service, const QString &oldOwner,
                                const QString &newOwner);
     void onMenuDestroyed();
 
-signals:
+Q_SIGNALS:
     void activateRequested(const QPoint &pos);
     void secondaryActivateRequested(const QPoint &pos);
     void scrollRequested(int delta, Qt::Orientation orientation);
