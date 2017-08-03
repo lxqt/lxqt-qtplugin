@@ -16,6 +16,10 @@ find_package(dbusmenu-qt5 REQUIRED QUIET)
 find_package(lxqt-build-tools ${LXQTBT_MINIMUM_VERSION} REQUIRED)
 find_package(Qt5XdgIconLoader REQUIRED QUIET)
 
+# for file dialog support
+find_package(Qt5X11Extras REQUIRED QUIET)
+find_package(fm-qt REQUIRED)
+
 include(LXQtCompilerSettings NO_POLICY_SCOPE)
 
 if(NOT CMAKE_BUILD_TYPE)
