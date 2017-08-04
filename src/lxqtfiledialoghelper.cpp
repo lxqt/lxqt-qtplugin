@@ -46,6 +46,8 @@ bool LXQtFileDialogHelper::show(Qt::WindowFlags windowFlags, Qt::WindowModality 
     // https://github.com/KDE/plasma-integration/blob/master/src/platformtheme/kdeplatformfiledialoghelper.cpp
     dlg_->windowHandle()->setTransientParent(parent);
 
+    applyOptions();
+
     // NOTE: the timer here is required as a workaround borrowed from KDE. Without this, the dialog UI will be blocked.
     // QFileDialog calls our platform plugin to show our own native file dialog instead of showing its widget.
     // However, it still creates a hidden dialog internally, and then make it modal.
@@ -89,7 +91,7 @@ void LXQtFileDialogHelper::setFilter() {
 }
 
 void LXQtFileDialogHelper::selectMimeTypeFilter(const QString& filter) {
-    // TODO
+    dlg_->selectMimeTypeFilter(filter);
 }
 
 void LXQtFileDialogHelper::selectNameFilter(const QString& filter) {
@@ -97,7 +99,7 @@ void LXQtFileDialogHelper::selectNameFilter(const QString& filter) {
 }
 
 QString LXQtFileDialogHelper::selectedMimeTypeFilter() const {
-    // TODO
+    return dlg_->selectedMimeTypeFilter();
 }
 
 QString LXQtFileDialogHelper::selectedNameFilter() const {
@@ -123,11 +125,13 @@ void LXQtFileDialogHelper::applyOptions() {
     dlg_->setDefaultSuffix(opt->defaultSuffix());
     // QStringList history() const;
 
-    /*
-    void setLabelText(DialogLabel label, const QString &text);
-    QString labelText(DialogLabel label) const;
-    bool isLabelExplicitlySet(DialogLabel label);
-    */
+    for(int i = 0; i < QFileDialogOptions::DialogLabelCount; ++i) {
+        auto label = static_cast<QFileDialogOptions::DialogLabel>(i);
+        if(opt->isLabelExplicitlySet(label)) {
+            dlg_->setLabelText(static_cast<QFileDialog::DialogLabel>(label), opt->labelText(label));
+        }
+    }
+
     auto url = opt->initialDirectory();
     if(url.isValid()) {
         dlg_->setDirectory(url);
