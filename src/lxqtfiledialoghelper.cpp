@@ -91,7 +91,7 @@ void LXQtFileDialogHelper::setFilter() {
 }
 
 void LXQtFileDialogHelper::selectMimeTypeFilter(const QString& filter) {
-    dlg_->selectMimeTypeFilter(filter);
+    //dlg_->selectMimeTypeFilter(filter); // TODO
 }
 
 void LXQtFileDialogHelper::selectNameFilter(const QString& filter) {
@@ -99,7 +99,8 @@ void LXQtFileDialogHelper::selectNameFilter(const QString& filter) {
 }
 
 QString LXQtFileDialogHelper::selectedMimeTypeFilter() const {
-    return dlg_->selectedMimeTypeFilter();
+    //return dlg_->selectedMimeTypeFilter();
+    return QString(); // TODO
 }
 
 QString LXQtFileDialogHelper::selectedNameFilter() const {
