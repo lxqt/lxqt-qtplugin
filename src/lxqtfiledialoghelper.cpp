@@ -123,6 +123,20 @@ bool LXQtFileDialogHelper::isSupportedUrl(const QUrl& url) const {
 
 void LXQtFileDialogHelper::applyOptions() {
     auto& opt = options();
+    if(options()->testOption(QFileDialogOptions::ShowDirsOnly)) {
+        if(!options()->windowTitle().isEmpty()) {
+            dlg_->setWindowTitle(options()->windowTitle());
+        }
+    }
+    else {
+        if(options()->windowTitle().isEmpty()) {
+            dlg_->setWindowTitle(options()->acceptMode() == QFileDialogOptions::AcceptOpen ? tr("Open File")
+                                                                                           : tr("Save File"));
+        }
+        else {
+            dlg_->setWindowTitle(options()->windowTitle());
+        }
+    }
     dlg_->setFilter(opt->filter());
     dlg_->setViewMode(opt->viewMode() == QFileDialogOptions::Detail ? Fm::FolderView::DetailedListMode : Fm::FolderView::CompactMode);
     dlg_->setFileMode(QFileDialog::FileMode(opt->fileMode()));
