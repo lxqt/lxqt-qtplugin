@@ -4,6 +4,7 @@
 #include <libfm-qt/filedialog.h>
 
 #include <QWindow>
+#include <QMimeDatabase>
 #include <QDebug>
 #include <QTimer>
 
@@ -90,18 +91,27 @@ void LXQtFileDialogHelper::setFilter() {
     applyOptions();
 }
 
-void LXQtFileDialogHelper::selectMimeTypeFilter(const QString& filter) {
-    //dlg_->selectMimeTypeFilter(filter); // TODO
-}
-
 void LXQtFileDialogHelper::selectNameFilter(const QString& filter) {
     dlg_->selectNameFilter(filter);
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
 QString LXQtFileDialogHelper::selectedMimeTypeFilter() const {
-    //return dlg_->selectedMimeTypeFilter();
-    return QString(); // TODO
+    const auto mimeTypeFromFilter = QMimeDatabase().mimeTypeForName(dlg_->selectedNameFilter());
+    if(mimeTypeFromFilter.isValid()) {
+        return mimeTypeFromFilter.name();
+    }
+    QList<QUrl> sel = dlg_->selectedFiles();
+    if(sel.isEmpty()) {
+        return QString();
+    }
+    return QMimeDatabase().mimeTypeForUrl(sel.at(0)).name();
 }
+
+void LXQtFileDialogHelper::selectMimeTypeFilter(const QString& filter) {
+    dlg_->selectNameFilter(filter);
+}
+#endif
 
 QString LXQtFileDialogHelper::selectedNameFilter() const {
     return dlg_->selectedNameFilter();
@@ -114,7 +124,7 @@ bool LXQtFileDialogHelper::isSupportedUrl(const QUrl& url) const {
 void LXQtFileDialogHelper::applyOptions() {
     auto& opt = options();
     dlg_->setFilter(opt->filter());
-    dlg_->setViewMode(opt->viewMode() == QFileDialog::Detail ? Fm::FolderView::DetailedListMode : Fm::FolderView::CompactMode);
+    dlg_->setViewMode(opt->viewMode() == QFileDialogOptions::Detail ? Fm::FolderView::DetailedListMode : Fm::FolderView::CompactMode);
     dlg_->setFileMode(QFileDialog::FileMode(opt->fileMode()));
     dlg_->setAcceptMode(QFileDialog::AcceptMode(opt->acceptMode()));
     // bool useDefaultNameFilters() const;
@@ -138,15 +148,24 @@ void LXQtFileDialogHelper::applyOptions() {
         dlg_->setDirectory(url);
     }
 
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
     auto filter = opt->initiallySelectedMimeTypeFilter();
     if(!filter.isEmpty()) {
         selectMimeTypeFilter(filter);
     }
-
+    else {
+        filter = opt->initiallySelectedNameFilter();
+        if(!filter.isEmpty()) {
+            selectNameFilter(options()->initiallySelectedNameFilter());
+        }
+    }
+#else
     filter = opt->initiallySelectedNameFilter();
     if(!filter.isEmpty()) {
         selectNameFilter(filter);
     }
+#endif
 
     auto selectedFiles = opt->initiallySelectedFiles();
     for(const auto& selectedFile: selectedFiles) {
