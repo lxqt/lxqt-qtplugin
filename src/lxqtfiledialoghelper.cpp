@@ -47,6 +47,12 @@ bool LXQtFileDialogHelper::show(Qt::WindowFlags windowFlags, Qt::WindowModality 
     // https://github.com/KDE/plasma-integration/blob/master/src/platformtheme/kdeplatformfiledialoghelper.cpp
     dlg_->windowHandle()->setTransientParent(parent);
 
+    // central positioning with respect to the parent window
+    if(parent && parent->isVisible()) {
+        dlg_->move(parent->x() + parent->width()/2 - dlg_->width()/2,
+                   parent->y() + parent->height()/2 - dlg_->height()/ 2);
+    }
+
     applyOptions();
 
     // NOTE: the timer here is required as a workaround borrowed from KDE. Without this, the dialog UI will be blocked.
@@ -123,24 +129,21 @@ bool LXQtFileDialogHelper::isSupportedUrl(const QUrl& url) const {
 
 void LXQtFileDialogHelper::applyOptions() {
     auto& opt = options();
-    if(options()->testOption(QFileDialogOptions::ShowDirsOnly)) {
-        if(!options()->windowTitle().isEmpty()) {
-            dlg_->setWindowTitle(options()->windowTitle());
-        }
+
+    // set title
+    if(opt->windowTitle().isEmpty()) {
+        dlg_->setWindowTitle(opt->acceptMode() == QFileDialogOptions::AcceptOpen ? tr("Open File")
+                                                                                 : tr("Save File"));
     }
     else {
-        if(options()->windowTitle().isEmpty()) {
-            dlg_->setWindowTitle(options()->acceptMode() == QFileDialogOptions::AcceptOpen ? tr("Open File")
-                                                                                           : tr("Save File"));
-        }
-        else {
-            dlg_->setWindowTitle(options()->windowTitle());
-        }
+        dlg_->setWindowTitle(opt->windowTitle());
     }
+
     dlg_->setFilter(opt->filter());
-    dlg_->setViewMode(opt->viewMode() == QFileDialogOptions::Detail ? Fm::FolderView::DetailedListMode : Fm::FolderView::CompactMode);
+    dlg_->setViewMode(opt->viewMode() == QFileDialogOptions::Detail ? Fm::FolderView::DetailedListMode
+                                                                    : Fm::FolderView::CompactMode);
     dlg_->setFileMode(QFileDialog::FileMode(opt->fileMode()));
-    dlg_->setAcceptMode(QFileDialog::AcceptMode(opt->acceptMode()));
+    dlg_->setAcceptMode(QFileDialog::AcceptMode(opt->acceptMode())); // also sets a default label for accept button
     // bool useDefaultNameFilters() const;
     dlg_->setNameFilters(opt->nameFilters());
     if(!opt->mimeTypeFilters().empty()) {
@@ -150,6 +153,7 @@ void LXQtFileDialogHelper::applyOptions() {
     dlg_->setDefaultSuffix(opt->defaultSuffix());
     // QStringList history() const;
 
+    // explicitly set labels
     for(int i = 0; i < QFileDialogOptions::DialogLabelCount; ++i) {
         auto label = static_cast<QFileDialogOptions::DialogLabel>(i);
         if(opt->isLabelExplicitlySet(label)) {
@@ -171,7 +175,7 @@ void LXQtFileDialogHelper::applyOptions() {
     else {
         filter = opt->initiallySelectedNameFilter();
         if(!filter.isEmpty()) {
-            selectNameFilter(options()->initiallySelectedNameFilter());
+            selectNameFilter(opt->initiallySelectedNameFilter());
         }
     }
 #else
