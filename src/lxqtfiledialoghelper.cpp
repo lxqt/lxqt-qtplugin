@@ -7,6 +7,7 @@
 #include <QMimeDatabase>
 #include <QDebug>
 #include <QTimer>
+#include <QSettings>
 
 #include <memory>
 
@@ -20,8 +21,14 @@ LXQtFileDialogHelper::LXQtFileDialogHelper() {
 
     // can only be used after libfm-qt initialization
     dlg_ = std::unique_ptr<Fm::FileDialog>(new Fm::FileDialog());
-    connect(dlg_.get(), &Fm::FileDialog::accepted, this, &LXQtFileDialogHelper::accept);
-    connect(dlg_.get(), &Fm::FileDialog::rejected, this, &LXQtFileDialogHelper::reject);
+    connect(dlg_.get(), &Fm::FileDialog::accepted, [this]() {
+        saveSettings();
+        accept();
+    });
+    connect(dlg_.get(), &Fm::FileDialog::rejected, [this]() {
+        saveSettings();
+        reject();
+    });
 
     connect(dlg_.get(), &Fm::FileDialog::fileSelected, this, &LXQtFileDialogHelper::fileSelected);
     connect(dlg_.get(), &Fm::FileDialog::filesSelected, this, &LXQtFileDialogHelper::filesSelected);
@@ -47,10 +54,11 @@ bool LXQtFileDialogHelper::show(Qt::WindowFlags windowFlags, Qt::WindowModality 
     // https://github.com/KDE/plasma-integration/blob/master/src/platformtheme/kdeplatformfiledialoghelper.cpp
     dlg_->windowHandle()->setTransientParent(parent);
 
+    loadSettings();
     // central positioning with respect to the parent window
     if(parent && parent->isVisible()) {
-        dlg_->move(parent->x() + parent->width()/2 - dlg_->width()/2,
-                   parent->y() + parent->height()/2 - dlg_->height()/ 2);
+        dlg_->move(parent->x() + (parent->width() - dlg_->width()) / 2,
+                   parent->y() + (parent->height() - dlg_->height()) / 2);
     }
 
     applyOptions();
@@ -190,6 +198,28 @@ void LXQtFileDialogHelper::applyOptions() {
         selectFile(selectedFile);
     }
     // QStringList supportedSchemes() const;
+}
+
+void LXQtFileDialogHelper::loadSettings() {
+    QSettings settings(QSettings::UserScope, "lxqt", "filedialog");
+    settings.beginGroup ("Sizes");
+    dlg_->resize(settings.value("WindowSize", QSize(700, 500)).toSize());
+    dlg_->setSplitterPos(settings.value("SplitterPos", 200).toInt());
+    settings.endGroup();
+}
+
+void LXQtFileDialogHelper::saveSettings() {
+    QSettings settings(QSettings::UserScope, "lxqt", "filedialog");
+    settings.beginGroup ("Sizes");
+    QSize windowSize = dlg_->size();
+    if(settings.value("WindowSize") != windowSize) { // no redundant write
+        settings.setValue("WindowSize", windowSize);
+    }
+    int splitterPos = dlg_->splitterPos();
+    if(settings.value("SplitterPos") != splitterPos) {
+        settings.setValue("SplitterPos", splitterPos);
+    }
+    settings.endGroup();
 }
 
 /*

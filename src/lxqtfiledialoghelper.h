@@ -39,6 +39,8 @@ public:
 
 private:
     void applyOptions();
+    void loadSettings();
+    void saveSettings();
 
 private:
     std::unique_ptr<Fm::FileDialog> dlg_;
