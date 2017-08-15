@@ -4,7 +4,6 @@
 #include <libfm-qt/filedialog.h>
 
 #include <QWindow>
-#include <QMimeDatabase>
 #include <QDebug>
 #include <QTimer>
 #include <QSettings>
@@ -111,19 +110,11 @@ void LXQtFileDialogHelper::selectNameFilter(const QString& filter) {
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
 QString LXQtFileDialogHelper::selectedMimeTypeFilter() const {
-    const auto mimeTypeFromFilter = QMimeDatabase().mimeTypeForName(dlg_->selectedNameFilter());
-    if(mimeTypeFromFilter.isValid()) {
-        return mimeTypeFromFilter.name();
-    }
-    QList<QUrl> sel = dlg_->selectedFiles();
-    if(sel.isEmpty()) {
-        return QString();
-    }
-    return QMimeDatabase().mimeTypeForUrl(sel.at(0)).name();
+    return dlg_->selectedMimeTypeFilter();
 }
 
 void LXQtFileDialogHelper::selectMimeTypeFilter(const QString& filter) {
-    dlg_->selectNameFilter(filter);
+    dlg_->selectMimeTypeFilter(filter);
 }
 #endif
 
