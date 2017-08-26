@@ -48,7 +48,7 @@ public:
     // virtual QPlatformMenuBar* createPlatformMenuBar() const;
 
     virtual bool usePlatformNativeDialog(DialogType type) const;
-    // virtual QPlatformDialogHelper *createPlatformDialogHelper(DialogType type) const;
+    virtual QPlatformDialogHelper *createPlatformDialogHelper(DialogType type) const;
 
     virtual const QPalette *palette(Palette type = SystemPalette) const;
 

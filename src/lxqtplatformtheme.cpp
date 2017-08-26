@@ -46,6 +46,8 @@
 #include <QStyle>
 #include <private/xdgiconloader/xdgiconloader_p.h>
 
+#include "lxqtfiledialoghelper.h"
+
 LXQtPlatformTheme::LXQtPlatformTheme():
     iconFollowColorScheme_(true)
     , settingsWatcher_(NULL)
@@ -198,14 +200,21 @@ void LXQtPlatformTheme::onSettingsChanged() {
 }
 
 bool LXQtPlatformTheme::usePlatformNativeDialog(DialogType type) const {
+    if(type == FileDialog) {
+        // use our own file dialog
+        return true;
+    }
     return false;
 }
 
-#if 0
+
 QPlatformDialogHelper *LXQtPlatformTheme::createPlatformDialogHelper(DialogType type) const {
-    return 0;
+    if(type == FileDialog) {
+        // use our own file dialog
+        return new LXQtFileDialogHelper();
+    }
+    return nullptr;
 }
-#endif
 
 const QPalette *LXQtPlatformTheme::palette(Palette type) const {
     return nullptr;
@@ -324,9 +333,9 @@ QStringList LXQtPlatformTheme::xdgIconThemePaths() const
         xdgDataDirs = QLatin1String("/usr/local/share/:/usr/share/");
     xdgDirs.append(xdgDataDirs);
 
-    foreach (const QString &s, xdgDirs) {
+    for (const auto &s: xdgDirs) {
         const QStringList r = s.split(QLatin1Char(':'), QString::SkipEmptyParts);
-        foreach (const QString &xdgDir, r) {
+        for (const auto& xdgDir: r) {
             const QFileInfo xdgIconsDir(xdgDir + QStringLiteral("/icons"));
             if (xdgIconsDir.isDir())
                 paths.append(xdgIconsDir.absoluteFilePath());
