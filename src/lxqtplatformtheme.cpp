@@ -200,7 +200,8 @@ void LXQtPlatformTheme::onSettingsChanged() {
 }
 
 bool LXQtPlatformTheme::usePlatformNativeDialog(DialogType type) const {
-    if(type == FileDialog) {
+    if(type == FileDialog
+       && qobject_cast<QApplication *>(QCoreApplication::instance())) { // QML may not have qApp
         // use our own file dialog
         return true;
     }
@@ -209,7 +210,8 @@ bool LXQtPlatformTheme::usePlatformNativeDialog(DialogType type) const {
 
 
 QPlatformDialogHelper *LXQtPlatformTheme::createPlatformDialogHelper(DialogType type) const {
-    if(type == FileDialog) {
+    if(type == FileDialog
+       && qobject_cast<QApplication *>(QCoreApplication::instance())) { // QML may not have qApp
         // use our own file dialog
         return new LXQtFileDialogHelper();
     }
