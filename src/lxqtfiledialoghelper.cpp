@@ -178,7 +178,7 @@ void LXQtFileDialogHelper::applyOptions() {
         }
     }
 #else
-    filter = opt->initiallySelectedNameFilter();
+    auto filter = opt->initiallySelectedNameFilter();
     if(!filter.isEmpty()) {
         selectNameFilter(filter);
     }
