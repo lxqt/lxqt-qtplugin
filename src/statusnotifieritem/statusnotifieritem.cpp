@@ -85,6 +85,9 @@ void StatusNotifierItem::registerToHost()
 void StatusNotifierItem::onServiceOwnerChanged(const QString& service, const QString& oldOwner,
                                                const QString& newOwner)
 {
+	Q_UNUSED(service);
+	Q_UNUSED(oldOwner);
+
     if (!newOwner.isEmpty())
         registerToHost();
 }
