@@ -1,7 +1,36 @@
 
-lxqt-qtplugin-0.11.1 / 2016-12-11
+lxqt-qtplugin-0.12.0 / 2017-10-21
 =================================
 
+  * Set an informal patch version
+  * Don't export github templates
+  * Flag unused vars in onServiceOwnerChanged
+  * Fix missing variable declaration
+  * Handle QML (as @PCMan suggested)
+  * Use mime functions added by @PCMan
+  * Loading and saving window/splitter size
+  * Central positioning with respect to parent
+  * Set window title correctly
+  * Qt version conditions
+  * Just made it compilable
+  * Handle mime-type filters for file dialog. Set custom file dialog labels.
+  * Update options properly.
+  * Implement a basic file dialog helper using libfm-qt's Fm::FileDialog.
+  * Avoid using Qt-specific keywords such as signal/slot and foreach. Instead, use macros.
+  * LXQtPlatformTheme: Make Qt use default palette (#22)
+  * LXQtPlatformTheme: Add icon FollowColorScheme config (#21)
+  * Prevent a possible C++11 range for detach (#20)
+  * Use the CMake MODULE library type.
+  * LXQtPlatformTheme: Propagate wheelScrollLines
+  * LXQtPlatformTheme: Do not provide own palette
+  * Fix multiple StatusNotifierItems.
+  * Bump year
+  * Updates lxqt-build-tools required version
+
+0.11.1 / 2016-12-11
+===================
+
+  * Release 0.11.1: Update changelog
   * Use lxqt-build-tools
   * Use the new lxqt-build-tools package
   * Remove cpack (#14)
