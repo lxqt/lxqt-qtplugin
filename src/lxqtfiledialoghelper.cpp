@@ -12,6 +12,9 @@
 
 static std::unique_ptr<Fm::LibFmQt> libfmQtContext_;
 
+inline static const QString viewModeToString(Fm::FolderView::ViewMode value);
+inline static Fm::FolderView::ViewMode viewModeFromString(const QString& str);
+
 LXQtFileDialogHelper::LXQtFileDialogHelper() {
     if(!libfmQtContext_) {
         // initialize libfm-qt only once
@@ -53,14 +56,14 @@ bool LXQtFileDialogHelper::show(Qt::WindowFlags windowFlags, Qt::WindowModality 
     // https://github.com/KDE/plasma-integration/blob/master/src/platformtheme/kdeplatformfiledialoghelper.cpp
     dlg_->windowHandle()->setTransientParent(parent);
 
+    applyOptions();
+
     loadSettings();
     // central positioning with respect to the parent window
     if(parent && parent->isVisible()) {
         dlg_->move(parent->x() + (parent->width() - dlg_->width()) / 2,
                    parent->y() + (parent->height() - dlg_->height()) / 2);
     }
-
-    applyOptions();
 
     // NOTE: the timer here is required as a workaround borrowed from KDE. Without this, the dialog UI will be blocked.
     // QFileDialog calls our platform plugin to show our own native file dialog instead of showing its widget.
@@ -139,8 +142,6 @@ void LXQtFileDialogHelper::applyOptions() {
     }
 
     dlg_->setFilter(opt->filter());
-    dlg_->setViewMode(opt->viewMode() == QFileDialogOptions::Detail ? Fm::FolderView::DetailedListMode
-                                                                    : Fm::FolderView::CompactMode);
     dlg_->setFileMode(QFileDialog::FileMode(opt->fileMode()));
     dlg_->setAcceptMode(QFileDialog::AcceptMode(opt->acceptMode())); // also sets a default label for accept button
     // bool useDefaultNameFilters() const;
@@ -191,12 +192,56 @@ void LXQtFileDialogHelper::applyOptions() {
     // QStringList supportedSchemes() const;
 }
 
+static const QString viewModeToString(Fm::FolderView::ViewMode value) {
+    QString ret;
+    switch(value) {
+    case Fm::FolderView::DetailedListMode:
+    default:
+        ret = QLatin1String("Detailed");
+        break;
+    case Fm::FolderView::CompactMode:
+        ret = QLatin1String("Compact");
+        break;
+    case Fm::FolderView::IconMode:
+        ret = QLatin1String("Icon");
+        break;
+    case Fm::FolderView::ThumbnailMode:
+        ret = QLatin1String("Thumbnail");
+        break;
+    }
+    return ret;
+}
+
+Fm::FolderView::ViewMode viewModeFromString(const QString& str) {
+    Fm::FolderView::ViewMode ret;
+    if(str == QLatin1String("Detailed")) {
+        ret = Fm::FolderView::DetailedListMode;
+    }
+    else if(str == QLatin1String("Compact")) {
+        ret = Fm::FolderView::CompactMode;
+    }
+    else if(str == QLatin1String("Icon")) {
+        ret = Fm::FolderView::IconMode;
+    }
+    else if(str == QLatin1String("Thumbnail")) {
+        ret = Fm::FolderView::ThumbnailMode;
+    }
+    else {
+        ret = Fm::FolderView::DetailedListMode;
+    }
+    return ret;
+}
+
 void LXQtFileDialogHelper::loadSettings() {
     QSettings settings(QSettings::UserScope, "lxqt", "filedialog");
     settings.beginGroup ("Sizes");
     dlg_->resize(settings.value("WindowSize", QSize(700, 500)).toSize());
     dlg_->setSplitterPos(settings.value("SplitterPos", 200).toInt());
     settings.endGroup();
+
+   settings.beginGroup ("View");
+   dlg_->setViewMode(viewModeFromString(settings.value("Mode", "Detailed").toString()));
+   settings.endGroup();
 }
 
 void LXQtFileDialogHelper::saveSettings() {
@@ -209,6 +254,13 @@ void LXQtFileDialogHelper::saveSettings() {
     int splitterPos = dlg_->splitterPos();
     if(settings.value("SplitterPos") != splitterPos) {
         settings.setValue("SplitterPos", splitterPos);
+    }
+    settings.endGroup();
+
+    settings.beginGroup ("View");
+    QString mode = viewModeToString(dlg_->viewMode());
+    if(settings.value("Mode") != mode) {
+        settings.setValue("Mode", mode);
     }
     settings.endGroup();
 }
