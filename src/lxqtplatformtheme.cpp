@@ -218,7 +218,7 @@ QPlatformDialogHelper *LXQtPlatformTheme::createPlatformDialogHelper(DialogType 
     return nullptr;
 }
 
-const QPalette *LXQtPlatformTheme::palette(Palette type) const {
+const QPalette *LXQtPlatformTheme::palette(Palette /*type*/) const {
     return nullptr;
 }
 
