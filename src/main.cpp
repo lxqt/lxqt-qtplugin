@@ -39,7 +39,7 @@ public:
     QPlatformTheme *create(const QString &key, const QStringList &params);
 };
 
-QPlatformTheme *LXQtPlatformThemePlugin::create(const QString &key, const QStringList &params) {
+QPlatformTheme *LXQtPlatformThemePlugin::create(const QString &key, const QStringList &/*params*/) {
     if (!key.compare(QLatin1String("lxqt"), Qt::CaseInsensitive))
         return new LXQtPlatformTheme();
     return NULL;
