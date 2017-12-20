@@ -302,7 +302,10 @@ QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
         break;
     case WheelScrollLines:
         return wheelScrollLines_;
-        break;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+    case QPlatformTheme::ShowShortcutsInContextMenus:
+        return QVariant(true);
+#endif
     default:
         break;
     }
