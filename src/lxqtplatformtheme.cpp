@@ -192,7 +192,8 @@ void LXQtPlatformTheme::onSettingsChanged() {
     QApplication::setWheelScrollLines(wheelScrollLines_.toInt());
 
     // emit a ThemeChange event to all widgets
-    Q_FOREACH(QWidget* widget, QApplication::allWidgets()) {
+    const auto widgets = QApplication::allWidgets();
+    for(QWidget* const widget : widgets) {
         // Qt5 added a QEvent::ThemeChange event.
         QEvent event(QEvent::ThemeChange);
         QApplication::sendEvent(widget, &event);
