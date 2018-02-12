@@ -315,6 +315,7 @@ QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
 
 QIconEngine *LXQtPlatformTheme::createIconEngine(const QString &iconName) const
 {
+    XdgIconLoader::instance()->setFollowColorScheme(iconFollowColorScheme_);
     return new XdgIconLoaderEngine(iconName);
 }
  
