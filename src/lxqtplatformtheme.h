@@ -78,11 +78,13 @@ public:
 
     // virtual QString standardButtonText(int button) const;
 
+public Q_SLOTS:
+    void lazyInit();
+
 private:
     void loadSettings();
 
 private Q_SLOTS:
-    void initWatch();
     void onSettingsChanged();
 
 private:

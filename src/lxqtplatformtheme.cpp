@@ -52,13 +52,20 @@ LXQtPlatformTheme::LXQtPlatformTheme():
     iconFollowColorScheme_(true)
     , settingsWatcher_(NULL)
 {
-    // When the plugin is loaded, it seems that the app is not yet running and
+    loadSettings();
+    // Note: When the plugin is loaded, it seems that the app is not yet running and
     // QThread environment is not completely set up. So creating filesystem watcher
     // does not work since it uses QSocketNotifier internally which can only be
     // created within QThread thread. So let's schedule a idle handler to initialize
     // the watcher in the main event loop.
-    loadSettings();
-    QTimer::singleShot(0, this, SLOT(initWatch()));
+
+    // Note2: the QTimer::singleShot with also needs a QThread environment
+    // (there is a workaround in qtcore for the 0-timer with the old SLOT notation)
+
+    // TODO: use the "PointerToMemberFunction" overloads of invokeMethod(), but they
+    // are available from Qt v5.10
+    //QMetaObject::ivokeMethod(this, &LXQtPlatformTheme::lazyInit, Qt::QueuedConnection);
+    QMetaObject::invokeMethod(this, "lazyInit", Qt::QueuedConnection);
 }
 
 LXQtPlatformTheme::~LXQtPlatformTheme() {
@@ -66,11 +73,13 @@ LXQtPlatformTheme::~LXQtPlatformTheme() {
         delete settingsWatcher_;
 }
 
-void LXQtPlatformTheme::initWatch()
+void LXQtPlatformTheme::lazyInit()
 {
     settingsWatcher_ = new QFileSystemWatcher();
     settingsWatcher_->addPath(settingsFile_);
     connect(settingsWatcher_, &QFileSystemWatcher::fileChanged, this, &LXQtPlatformTheme::onSettingsChanged);
+
+    XdgIconLoader::instance()->setFollowColorScheme(iconFollowColorScheme_);
 }
 
 void LXQtPlatformTheme::loadSettings() {
@@ -315,7 +324,6 @@ QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
 
 QIconEngine *LXQtPlatformTheme::createIconEngine(const QString &iconName) const
 {
-    XdgIconLoader::instance()->setFollowColorScheme(iconFollowColorScheme_);
     return new XdgIconLoaderEngine(iconName);
 }
  
