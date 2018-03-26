@@ -83,9 +83,9 @@ lxqt-qtplugin-0.12.0 / 2017-10-21
 ==================
 
   * Apply the default application font on program startup.
-  * Apply the new font to all apps correctly and fix lxde/lxde-qt bug #212 - Changing font or theme in lxqt-config-appearance has no effect.
-  * Make the code compile with Qt 5.2, fix lxde-qt bug #207.
-  * Fix lxde-qt bug #207: lxqt-qtplugin fail to build with Qt5.
+  * Apply the new font to all apps correctly and fix lxqt/lxqt#212 - Changing font or theme in lxqt-config-appearance has no effect.
+  * Make the code compile with Qt 5.2, fix lxqt/lxqt#207.
+  * Fix lxqt/lxqt#207: lxqt-qtplugin fail to build with Qt5.
   * Use qmake to query the path of Qt5 plugin dir, which is much more reliable.
   * Update README and provide information for usage and debugging.
   * Use a more reliable and portable way to get the path of Qt5 plugin dir.

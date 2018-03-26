@@ -1,8 +1,8 @@
 /* BEGIN_COMMON_COPYRIGHT_HEADER
  * (c)LGPL2+
  *
- * LXDE-Qt - a lightweight, Qt based, desktop toolset
- * http://lxde.org/
+ * LXQt - a lightweight, Qt based, desktop toolset
+ * http://lxqt.org/
  *
  * Copyright: 2014 LXQt team
  * Authors:
@@ -138,7 +138,7 @@ void LXQtPlatformTheme::loadSettings() {
 // this is called whenever the config file is changed.
 void LXQtPlatformTheme::onSettingsChanged() {
     // D*mn! yet another Qt 5.4 regression!!!
-    // See the bug report: https://github.com/lxde/lxqt/issues/441
+    // See the bug report: https://github.com/lxqt/lxqt/issues/441
     // Since Qt 5.4, QSettings uses QSaveFile to save the config files.
     // https://github.com/qtproject/qtbase/commit/8d15068911d7c0ba05732e2796aaa7a90e34a6a1#diff-e691c0405f02f3478f4f50a27bdaecde
     // QSaveFile will save the content to a new temp file, and replace the old file later.
