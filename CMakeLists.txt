@@ -3,7 +3,7 @@ project(lxqt-qtplugin)
 
 include(GNUInstallDirs)
 
-set(LXQTBT_MINIMUM_VERSION "0.4.0")
+set(LXQTBT_MINIMUM_VERSION "0.5.0")
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -22,6 +22,7 @@ find_package(Qt5XdgIconLoader REQUIRED)
 find_package(Qt5X11Extras REQUIRED)
 find_package(fm-qt REQUIRED)
 
+include(LXQtPreventInSourceBuilds)
 include(LXQtCompilerSettings NO_POLICY_SCOPE)
 
 if(NOT CMAKE_BUILD_TYPE)
