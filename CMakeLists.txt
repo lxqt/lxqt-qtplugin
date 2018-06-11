@@ -4,6 +4,7 @@ project(lxqt-qtplugin)
 include(GNUInstallDirs)
 
 set(LXQTBT_MINIMUM_VERSION "0.5.0")
+set(LIBFM_QT_MINIMUM_VERSION "0.14.0")
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -20,7 +21,7 @@ find_package(Qt5XdgIconLoader REQUIRED)
 
 # for file dialog support
 find_package(Qt5X11Extras REQUIRED)
-find_package(fm-qt REQUIRED)
+find_package(fm-qt ${LIBFM_QT_MINIMUM_VERSION} REQUIRED)
 
 include(LXQtPreventInSourceBuilds)
 include(LXQtCompilerSettings NO_POLICY_SCOPE)
