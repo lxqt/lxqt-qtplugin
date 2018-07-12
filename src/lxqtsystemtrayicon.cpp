@@ -290,7 +290,7 @@ void LXQtSystemTrayIcon::init()
         QPlatformMenuItem *menuItem = menu->createMenuItem();
         menuItem->setParent(menu);
         menuItem->setText(tr("Quit"));
-        menuItem->setIcon(QIcon::fromTheme("application-exit"));
+        menuItem->setIcon(QIcon::fromTheme(QLatin1String("application-exit")));
         connect(menuItem, &QPlatformMenuItem::activated, qApp, &QApplication::quit);
         menu->insertMenuItem(menuItem, nullptr);
         updateMenu(menu);
@@ -369,9 +369,9 @@ void LXQtSystemTrayIcon::showMessage(const QString &title, const QString &msg,
 
 bool LXQtSystemTrayIcon::isSystemTrayAvailable() const
 {
-    QDBusInterface systrayHost("org.kde.StatusNotifierWatcher",
-                               "/StatusNotifierWatcher",
-                               "org.kde.StatusNotifierWatcher");
+    QDBusInterface systrayHost(QLatin1String("org.kde.StatusNotifierWatcher"),
+                               QLatin1String("/StatusNotifierWatcher"),
+                               QLatin1String("org.kde.StatusNotifierWatcher"));
 
     return systrayHost.isValid() && systrayHost.property("IsStatusNotifierHostRegistered").toBool();
 }

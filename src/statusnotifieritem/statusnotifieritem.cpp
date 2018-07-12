@@ -36,12 +36,12 @@ int StatusNotifierItem::mServiceCounter = 0;
 StatusNotifierItem::StatusNotifierItem(QString id, QObject *parent)
     : QObject(parent),
     mAdaptor(new StatusNotifierItemAdaptor(this)),
-    mService(QString("org.freedesktop.StatusNotifierItem-%1-%2")
+    mService(QString::fromLatin1("org.freedesktop.StatusNotifierItem-%1-%2")
              .arg(QCoreApplication::applicationPid())
              .arg(++mServiceCounter)),
     mId(id),
-    mTitle("Test"),
-    mStatus("Active"),
+    mTitle(QLatin1String("Test")),
+    mStatus(QLatin1String("Active")),
     mMenu(nullptr),
     mMenuExporter(nullptr),
     mSessionBus(QDBusConnection::connectToBus(QDBusConnection::SessionBus, mService))
@@ -58,7 +58,7 @@ StatusNotifierItem::StatusNotifierItem(QString id, QObject *parent)
     registerToHost();
 
     // monitor the watcher service in case the host restarts
-    QDBusServiceWatcher *watcher = new QDBusServiceWatcher("org.kde.StatusNotifierWatcher",
+    QDBusServiceWatcher *watcher = new QDBusServiceWatcher(QLatin1String("org.kde.StatusNotifierWatcher"),
                                                            mSessionBus,
                                                            QDBusServiceWatcher::WatchForOwnerChange,
                                                            this);
@@ -75,11 +75,11 @@ StatusNotifierItem::~StatusNotifierItem()
 
 void StatusNotifierItem::registerToHost()
 {
-    QDBusInterface interface("org.kde.StatusNotifierWatcher",
-                             "/StatusNotifierWatcher",
-                             "org.kde.StatusNotifierWatcher",
+    QDBusInterface interface(QLatin1String("org.kde.StatusNotifierWatcher"),
+                             QLatin1String("/StatusNotifierWatcher"),
+                             QLatin1String("org.kde.StatusNotifierWatcher"),
                              mSessionBus);
-    interface.asyncCall("RegisterStatusNotifierItem", mService);
+    interface.asyncCall(QLatin1String("RegisterStatusNotifierItem"), mService);
 }
 
 void StatusNotifierItem::onServiceOwnerChanged(const QString& service, const QString& oldOwner,
@@ -230,7 +230,7 @@ void StatusNotifierItem::setContextMenu(QMenu* menu)
     }
     mMenu = menu;
 
-    setMenuPath("/MenuBar");
+    setMenuPath(QLatin1String("/MenuBar"));
     //Note: we need to destroy menu exporter before creating new one -> to free the DBus object path for new menu
     delete mMenuExporter;
     if (nullptr != mMenu)
@@ -242,16 +242,16 @@ void StatusNotifierItem::setContextMenu(QMenu* menu)
 
 void StatusNotifierItem::Activate(int x, int y)
 {
-    if (mStatus == "NeedsAttention")
-        mStatus = "Active";
+    if (mStatus == QLatin1String("NeedsAttention"))
+        mStatus = QLatin1String("Active");
 
     Q_EMIT activateRequested(QPoint(x, y));
 }
 
 void StatusNotifierItem::SecondaryActivate(int x, int y)
 {
-    if (mStatus == "NeedsAttention")
-        mStatus = "Active";
+    if (mStatus == QLatin1String("NeedsAttention"))
+        mStatus = QLatin1String("Active");
 
     Q_EMIT secondaryActivateRequested(QPoint(x, y));
 }
@@ -270,7 +270,7 @@ void StatusNotifierItem::ContextMenu(int x, int y)
 void StatusNotifierItem::Scroll(int delta, const QString &orientation)
 {
     Qt::Orientation orient = Qt::Vertical;
-    if (orientation.toLower() == "horizontal")
+    if (orientation.toLower() == QLatin1String("horizontal"))
         orient = Qt::Horizontal;
 
     Q_EMIT scrollRequested(delta, orient);
@@ -279,9 +279,9 @@ void StatusNotifierItem::Scroll(int delta, const QString &orientation)
 void StatusNotifierItem::showMessage(const QString& title, const QString& msg,
                                      const QString& iconName, int secs)
 {
-    QDBusInterface interface("org.freedesktop.Notifications", "/org/freedesktop/Notifications",
-                             "org.freedesktop.Notifications", mSessionBus);
-    interface.call("Notify", mTitle, (uint) 0, iconName, title,
+    QDBusInterface interface(QLatin1String("org.freedesktop.Notifications"), QLatin1String("/org/freedesktop/Notifications"),
+                             QLatin1String("org.freedesktop.Notifications"), mSessionBus);
+    interface.call(QLatin1String("Notify"), mTitle, (uint) 0, iconName, title,
                    msg, QStringList(), QVariantMap(), secs);
 }
 
