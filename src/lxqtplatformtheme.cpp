@@ -93,15 +93,15 @@ void LXQtPlatformTheme::loadSettings() {
     // as a fallback if a key is missing from the user config file ~/.config/lxqt/lxqt.conf.
     // So we can customize the default values in /etc/xdg/lxqt/lxqt.conf and does
     // not necessarily to hard code the default values here.
-    QSettings settings(QSettings::UserScope, "lxqt", "lxqt");
+    QSettings settings(QSettings::UserScope, QLatin1String("lxqt"), QLatin1String("lxqt"));
     settingsFile_ = settings.fileName();
 
     // icon theme
-    iconTheme_ = settings.value("icon_theme", "oxygen").toString();
-    iconFollowColorScheme_ = settings.value("icon_follow_color_scheme", iconFollowColorScheme_).toBool();
+    iconTheme_ = settings.value(QLatin1String("icon_theme"), QLatin1String("oxygen")).toString();
+    iconFollowColorScheme_ = settings.value(QLatin1String("icon_follow_color_scheme"), iconFollowColorScheme_).toBool();
 
     // read other widget related settings form LxQt settings.
-    QByteArray tb_style = settings.value("tool_button_style").toByteArray();
+    QByteArray tb_style = settings.value(QLatin1String("tool_button_style")).toByteArray();
     // convert toolbar style name to value
     QMetaEnum me = QToolBar::staticMetaObject.property(QToolBar::staticMetaObject.indexOfProperty("toolButtonStyle")).enumerator();
     int value = me.keyToValue(tb_style.constData());
@@ -111,7 +111,7 @@ void LXQtPlatformTheme::loadSettings() {
         toolButtonStyle_ = static_cast<Qt::ToolButtonStyle>(value);
 
     // single click activation
-    singleClickActivate_ = settings.value("single_click_activate").toBool();
+    singleClickActivate_ = settings.value(QLatin1String("single_click_activate")).toBool();
 
     // load Qt settings
     settings.beginGroup(QLatin1String("Qt"));
@@ -232,14 +232,14 @@ QPlatformDialogHelper *LXQtPlatformTheme::createPlatformDialogHelper(DialogType 
 
         // When a process has this environment set, that means glib event loop integration is disabled.
         // In this case, libfm-qt just won't work. So let's disable the file dialog helper and return nullptr.
-        if(qgetenv("QT_NO_GLIB") == "1") {
+        if(QString::fromLocal8Bit(qgetenv("QT_NO_GLIB")) == QLatin1String("1")) {
             return nullptr;
         }
 
         // The createFileDialogHelper() method is dynamically loaded from libfm-qt on demand
         if(createFileDialogHelper == nullptr) {
             // try to dynamically load libfm-qt.so
-            QLibrary libfmQtLibrary{"libfm-qt"};
+            QLibrary libfmQtLibrary{QLatin1String("libfm-qt")};
             libfmQtLibrary.load();
             if(!libfmQtLibrary.isLoaded()) {
                 return nullptr;
@@ -307,7 +307,7 @@ QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
     case SystemIconThemeName:
         return iconTheme_;
     case SystemIconFallbackThemeName:
-        return "hicolor";
+        return QLatin1String("hicolor");
     case IconThemeSearchPaths:
         return xdgIconThemePaths();
     case StyleNames:

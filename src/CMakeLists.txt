@@ -26,6 +26,16 @@ qt5_add_dbus_adaptor(qtlxqt_SRCS
 
 add_library(qtlxqt MODULE ${qtlxqt_HDRS} ${qtlxqt_SRCS})
 
+target_compile_definitions(qtlxqt
+    PRIVATE
+        "QT_NO_FOREACH"
+        "QT_USE_QSTRINGBUILDER"
+        "QT_NO_CAST_FROM_ASCII"
+        "QT_NO_CAST_TO_ASCII"
+        "QT_NO_URL_CAST_FROM_STRING"
+        "QT_NO_CAST_FROM_BYTEARRAY"
+)
+
 target_link_libraries(qtlxqt
     Qt5::Widgets
     Qt5::DBus
