@@ -19,10 +19,6 @@ find_package(Qt5XdgIconLoader REQUIRED)
 
 # Patch Version 0
 
-# for file dialog support
-find_package(Qt5X11Extras REQUIRED)
-find_package(fm-qt ${LIBFM_QT_MINIMUM_VERSION} REQUIRED)
-
 include(LXQtPreventInSourceBuilds)
 include(LXQtCompilerSettings NO_POLICY_SCOPE)
 

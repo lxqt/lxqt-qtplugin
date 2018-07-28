@@ -45,8 +45,14 @@
 #include <QFileSystemWatcher>
 #include <QStyle>
 #include <private/xdgiconloader/xdgiconloader_p.h>
+#include <QLibrary>
 
-#include "lxqtfiledialoghelper.h"
+
+// Function to create a new Fm::FileDialogHelper object.
+// This is dynamically loaded at runtime on demand from libfm-qt.
+typedef QPlatformDialogHelper* (*CreateFileDialogHelperFunc)();
+static CreateFileDialogHelperFunc createFileDialogHelper = nullptr;
+
 
 LXQtPlatformTheme::LXQtPlatformTheme():
     iconFollowColorScheme_(true)
@@ -222,8 +228,32 @@ bool LXQtPlatformTheme::usePlatformNativeDialog(DialogType type) const {
 QPlatformDialogHelper *LXQtPlatformTheme::createPlatformDialogHelper(DialogType type) const {
     if(type == FileDialog
        && qobject_cast<QApplication *>(QCoreApplication::instance())) { // QML may not have qApp
-        // use our own file dialog
-        return new LXQtFileDialogHelper();
+        // use our own file dialog provided by libfm
+
+        // When a process has this environment set, that means glib event loop integration is disabled.
+        // In this case, libfm-qt just won't work. So let's disable the file dialog helper and return nullptr.
+        if(qgetenv("QT_NO_GLIB") == "1") {
+            return nullptr;
+        }
+
+        // The createFileDialogHelper() method is dynamically loaded from libfm-qt on demand
+        if(createFileDialogHelper == nullptr) {
+            // try to dynamically load libfm-qt.so
+            QLibrary libfmQtLibrary{"libfm-qt"};
+            libfmQtLibrary.load();
+            if(!libfmQtLibrary.isLoaded()) {
+                return nullptr;
+            }
+
+            // try to resolve the symbol to get the function pointer
+            createFileDialogHelper = reinterpret_cast<CreateFileDialogHelperFunc>(libfmQtLibrary.resolve("createFileDialogHelper"));
+            if(!createFileDialogHelper) {
+                return nullptr;
+            }
+        }
+
+        // create a new file dialog helper provided by libfm
+        return createFileDialogHelper();
     }
     return nullptr;
 }
