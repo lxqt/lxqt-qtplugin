@@ -1,5 +1,8 @@
-cmake_minimum_required(VERSION 3.0.2 FATAL_ERROR)
 project(lxqt-qtplugin)
+# CMP0000 - A minimum required CMake version must be specified.
+# Note that the command invocation must appear in the CMakeLists.txt
+# file itself; a call in an included file is not sufficient.
+cmake_minimum_required(VERSION 3.6.2 FATAL_ERROR)
 
 include(GNUInstallDirs)
 
@@ -21,9 +24,5 @@ find_package(Qt5XdgIconLoader REQUIRED)
 
 include(LXQtPreventInSourceBuilds)
 include(LXQtCompilerSettings NO_POLICY_SCOPE)
-
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release)
-endif()
 
 add_subdirectory(src)
