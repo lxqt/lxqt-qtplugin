@@ -8,19 +8,22 @@ project(lxqt-qtplugin)
 
 include(GNUInstallDirs)
 
-set(LXQTBT_MINIMUM_VERSION "0.5.0")
-set(LIBFM_QT_MINIMUM_VERSION "0.14.0")
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5LinguistTools REQUIRED)
-find_package(Qt5DBus REQUIRED)
-find_package(dbusmenu-qt5 REQUIRED)
+# Minimum Versions
+set(LIBFM_QT_MINIMUM_VERSION "0.14.0")
+set(LXQTBT_MINIMUM_VERSION "0.6.0")
+set(QT_MINIMUM_VERSION "5.7.1")
+set(QTXDG_MINIMUM_VERSION "3.3.0")
+
+find_package(Qt5DBus ${QT_MINIMUM_VERSION} REQUIRED)
+find_package(Qt5LinguistTools ${QT_MINIMUM_VERSION} REQUIRED)
+find_package(Qt5Widgets ${QT_MINIMUM_VERSION} REQUIRED)
+find_package(Qt5XdgIconLoader ${QTXDG_MINIMUM_VERSION} REQUIRED)
 find_package(lxqt-build-tools ${LXQTBT_MINIMUM_VERSION} REQUIRED)
-find_package(Qt5XdgIconLoader REQUIRED)
+find_package(dbusmenu-qt5 REQUIRED)
 
 # Patch Version 0
 
