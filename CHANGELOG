@@ -9,6 +9,7 @@ lxqt-qtplugin-0.14.0 / 2018-12-01
   * Improved cmake scripting
     - set cmake_minimum_required to 3.1.0
     - removed locale compile definitons
+    - removed the superfluous libfm-qt dependency 
  
 lxqt-qtplugin-0.13.0 / 2018-05-21
 =================================
