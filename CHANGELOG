@@ -1,5 +1,5 @@
 
-lxqt-qtplugin-0.14.0 / 2018-12-01
+lxqt-qtplugin-0.14.0 / 2019-01-25
 =================================
 
   * Bumped version to 0.14.0
@@ -24,8 +24,8 @@ lxqt-qtplugin-0.13.0 / 2018-05-21
   * Silent unused parameters warnings
   * Remember the view mode
 
-0.12.0 / 2017-10-21
-===================
+lxqt-qtplugin-0.12.0 / 2017-10-21
+=================================
 
   * Release 0.12.0: Update changelog
   * Set an informal patch version
@@ -53,16 +53,16 @@ lxqt-qtplugin-0.13.0 / 2018-05-21
   * Bump year
   * Updates lxqt-build-tools required version
 
-0.11.1 / 2016-12-11
-===================
+lxqt-qtplugin-0.11.1 / 2016-12-11
+=================================
 
   * Release 0.11.1: Update changelog
   * Use lxqt-build-tools
   * Use the new lxqt-build-tools package
   * Remove cpack (#14)
 
-0.11.0 / 2016-09-24
-===================
+lxqt-qtplugin-0.11.0 / 2016-09-24
+=================================
 
   * Release 0.11.0: Add changelog
   * Add Qt5XdgIconLoader as dependency (#13)
@@ -75,8 +75,8 @@ lxqt-qtplugin-0.13.0 / 2018-05-21
   * Adds $XDG_DATA_HOME to the XdgIconThemePaths
   * Bump year in AUTHORS
 
-0.10.0 / 2015-11-02
-===================
+lxqt-qtplugin-0.10.0 / 2015-11-02
+=================================
 
   * Remove unnecessary qDebug calls
   * Use markdown for README
@@ -97,16 +97,16 @@ lxqt-qtplugin-0.13.0 / 2018-05-21
   * Remove trailing whitespaces
   * removed debug (which makes every app too verbose)
 
-0.9.0 / 2015-01-19
-==================
+lxqt-qtplugin-0.9.0 / 2015-01-19
+================================
 
   * Try to workaround bug #441 - All LXQt::Settings and QSettings file change monitoring stop working.
   * - Unify naming for a unique lxqt. No more suffixes
   * Qt5: Use XDG_DATA_DIR for themeHint::IconThemeSearchPaths
   * CMakeLists.txt cleanuop and drop Qt4 support
 
-0.8.0 / 2014-07-18
-==================
+lxqt-qtplugin-0.8.0 / 2014-07-18
+================================
 
   * Apply the default application font on program startup.
   * Apply the new font to all apps correctly and fix lxde/lxde-qt bug #212 - Changing font or theme in lxqt-config-appearance has no effect.
@@ -126,8 +126,8 @@ lxqt-qtplugin-0.13.0 / 2018-05-21
   * Remove unnecessary debug messages.
   * Fix int-to-enum casting
 
-0.7.0 / 2014-04-29
-==================
+lxqt-qtplugin-0.7.0 / 2014-04-29
+================================
 
   * Update AUTHORS and COPYING
   * Add CPack rules for creating tarball
