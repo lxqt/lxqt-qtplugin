@@ -36,7 +36,7 @@ class LXQtPlatformThemePlugin: public QPlatformThemePlugin {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QPA.QPlatformThemeFactoryInterface.5.1" FILE "lxqtplatformtheme.json")
 public:
-    QPlatformTheme *create(const QString &key, const QStringList &params);
+    QPlatformTheme *create(const QString &key, const QStringList &params) override;
 };
 
 QPlatformTheme *LXQtPlatformThemePlugin::create(const QString &key, const QStringList &/*params*/) {

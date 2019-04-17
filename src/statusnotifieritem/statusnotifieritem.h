@@ -61,7 +61,7 @@ class StatusNotifierItem : public QObject
 
 public:
     StatusNotifierItem(QString id, QObject *parent = nullptr);
-    ~StatusNotifierItem();
+    ~StatusNotifierItem() override;
 
     QString id() const
     { return mId; }
