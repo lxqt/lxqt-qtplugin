@@ -355,7 +355,7 @@ QPlatformMenu *LXQtSystemTrayIcon::createMenu() const
 QRect LXQtSystemTrayIcon::geometry() const
 {
     // StatusNotifierItem doesn't provide the geometry
-    return QRect();
+    return {};
 }
 
 void LXQtSystemTrayIcon::showMessage(const QString &title, const QString &msg,
