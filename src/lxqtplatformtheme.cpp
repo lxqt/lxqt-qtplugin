@@ -56,7 +56,7 @@ static CreateFileDialogHelperFunc createFileDialogHelper = nullptr;
 
 LXQtPlatformTheme::LXQtPlatformTheme():
     iconFollowColorScheme_(true)
-    , settingsWatcher_(NULL)
+    , settingsWatcher_(nullptr)
 {
     loadSettings();
     // Note: When the plugin is loaded, it seems that the app is not yet running and
