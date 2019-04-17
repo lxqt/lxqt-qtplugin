@@ -41,22 +41,22 @@ class Q_GUI_EXPORT LXQtPlatformTheme : public QObject, public QPlatformTheme {
     Q_OBJECT
 public:
     LXQtPlatformTheme();
-    ~LXQtPlatformTheme();
+    ~LXQtPlatformTheme() override;
 
     // virtual QPlatformMenuItem* createPlatformMenuItem() const;
     // virtual QPlatformMenu* createPlatformMenu() const;
     // virtual QPlatformMenuBar* createPlatformMenuBar() const;
 
-    virtual bool usePlatformNativeDialog(DialogType type) const;
-    virtual QPlatformDialogHelper *createPlatformDialogHelper(DialogType type) const;
+    bool usePlatformNativeDialog(DialogType type) const override;
+    QPlatformDialogHelper *createPlatformDialogHelper(DialogType type) const override;
 
-    virtual const QPalette *palette(Palette type = SystemPalette) const;
+    const QPalette *palette(Palette type = SystemPalette) const override;
 
-    virtual const QFont *font(Font type = SystemFont) const;
+    const QFont *font(Font type = SystemFont) const override;
 
-    virtual QVariant themeHint(ThemeHint hint) const;
+    QVariant themeHint(ThemeHint hint) const override;
 
-    QPlatformSystemTrayIcon *createPlatformSystemTrayIcon() const
+    QPlatformSystemTrayIcon *createPlatformSystemTrayIcon() const override
     {
         auto trayIcon = new LXQtSystemTrayIcon;
         if (trayIcon->isSystemTrayAvailable())
@@ -72,7 +72,7 @@ public:
     // virtual QPixmap fileIconPixmap(const QFileInfo &fileInfo, const QSizeF &size,
     //                               QPlatformTheme::IconOptions iconOptions = 0) const;
 
-    virtual QIconEngine *createIconEngine(const QString &iconName) const;
+    QIconEngine *createIconEngine(const QString &iconName) const override;
 
     // virtual QList<QKeySequence> keyBindings(QKeySequence::StandardKey key) const;
 
