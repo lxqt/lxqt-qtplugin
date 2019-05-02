@@ -239,7 +239,7 @@ QPlatformDialogHelper *LXQtPlatformTheme::createPlatformDialogHelper(DialogType 
         // The createFileDialogHelper() method is dynamically loaded from libfm-qt on demand
         if(createFileDialogHelper == nullptr) {
             // try to dynamically load versioned libfm-qt.so
-            QLibrary libfmQtLibrary{QLatin1String("libfm-qt"), QLatin1String(FMQT_SO_VERSION)};
+            QLibrary libfmQtLibrary{QLatin1String(LIB_FM_QT_SONAME)};
             libfmQtLibrary.load();
             if(!libfmQtLibrary.isLoaded()) {
                 return nullptr;

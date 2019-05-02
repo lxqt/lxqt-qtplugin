@@ -34,6 +34,7 @@ target_compile_definitions(qtlxqt
         "QT_NO_CAST_TO_ASCII"
         "QT_NO_URL_CAST_FROM_STRING"
         "QT_NO_CAST_FROM_BYTEARRAY"
+        "LIB_FM_QT_SONAME=\"${LIB_FM_QT_SONAME}\""
 )
 
 target_link_libraries(qtlxqt
