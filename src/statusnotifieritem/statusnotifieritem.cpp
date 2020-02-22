@@ -29,7 +29,7 @@
 #include "statusnotifieritemadaptor.h"
 #include <QDBusInterface>
 #include <QDBusServiceWatcher>
-#include <dbusmenu-qt5/dbusmenuexporter.h>
+#include <dbusmenuexporter.h>
 
 int StatusNotifierItem::mServiceCounter = 0;
 
