@@ -44,6 +44,7 @@ StatusNotifierItem::StatusNotifierItem(QString id, QObject *parent)
     mStatus(QLatin1String("Active")),
     mCategory(QLatin1String("ApplicationStatus")),
     mMenu(nullptr),
+    mMenuPath(QLatin1String("/NO_DBUSMENU")),
     mMenuExporter(nullptr),
     mSessionBus(QDBusConnection::connectToBus(QDBusConnection::SessionBus, mService))
 {
@@ -94,6 +95,7 @@ void StatusNotifierItem::onServiceOwnerChanged(const QString& service, const QSt
 void StatusNotifierItem::onMenuDestroyed()
 {
     mMenu = nullptr;
+    setMenuPath(QLatin1String("/NO_DBUSMENU"));
     mMenuExporter = nullptr; //mMenu is a QObject parent of the mMenuExporter
 }
 
@@ -237,7 +239,11 @@ void StatusNotifierItem::setContextMenu(QMenu* menu)
     }
     mMenu = menu;
 
-    setMenuPath(QLatin1String("/MenuBar"));
+    if (nullptr != mMenu)
+        setMenuPath(QLatin1String("/MenuBar"));
+    else
+        setMenuPath(QLatin1String("/NO_DBUSMENU"));
+
     //Note: we need to destroy menu exporter before creating new one -> to free the DBus object path for new menu
     delete mMenuExporter;
     if (nullptr != mMenu)
