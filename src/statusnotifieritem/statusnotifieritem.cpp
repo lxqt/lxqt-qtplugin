@@ -52,7 +52,6 @@ StatusNotifierItem::StatusNotifierItem(QString id, QObject *parent)
 
     // register service
 
-    mSessionBus.registerService(mService);
     mSessionBus.registerObject(QLatin1String("/StatusNotifierItem"), this);
 
     registerToHost();
@@ -69,7 +68,6 @@ StatusNotifierItem::StatusNotifierItem(QString id, QObject *parent)
 StatusNotifierItem::~StatusNotifierItem()
 {
     mSessionBus.unregisterObject(QLatin1String("/StatusNotifierItem"));
-    mSessionBus.unregisterService(mService);
     QDBusConnection::disconnectFromBus(mService);
 }
 
@@ -79,7 +77,7 @@ void StatusNotifierItem::registerToHost()
                              QLatin1String("/StatusNotifierWatcher"),
                              QLatin1String("org.kde.StatusNotifierWatcher"),
                              mSessionBus);
-    interface.asyncCall(QLatin1String("RegisterStatusNotifierItem"), mService);
+    interface.asyncCall(QLatin1String("RegisterStatusNotifierItem"), mSessionBus.baseService());
 }
 
 void StatusNotifierItem::onServiceOwnerChanged(const QString& service, const QString& oldOwner,
