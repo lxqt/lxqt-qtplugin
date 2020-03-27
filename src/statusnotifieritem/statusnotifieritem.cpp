@@ -29,7 +29,7 @@
 #include "statusnotifieritemadaptor.h"
 #include <QDBusInterface>
 #include <QDBusServiceWatcher>
-#include <dbusmenu-qt5/dbusmenuexporter.h>
+#include <dbusmenuexporter.h>
 
 int StatusNotifierItem::mServiceCounter = 0;
 
@@ -42,7 +42,9 @@ StatusNotifierItem::StatusNotifierItem(QString id, QObject *parent)
     mId(id),
     mTitle(QLatin1String("Test")),
     mStatus(QLatin1String("Active")),
+    mCategory(QLatin1String("ApplicationStatus")),
     mMenu(nullptr),
+    mMenuPath(QLatin1String("/NO_DBUSMENU")),
     mMenuExporter(nullptr),
     mSessionBus(QDBusConnection::connectToBus(QDBusConnection::SessionBus, mService))
 {
@@ -52,7 +54,6 @@ StatusNotifierItem::StatusNotifierItem(QString id, QObject *parent)
 
     // register service
 
-    mSessionBus.registerService(mService);
     mSessionBus.registerObject(QLatin1String("/StatusNotifierItem"), this);
 
     registerToHost();
@@ -69,7 +70,6 @@ StatusNotifierItem::StatusNotifierItem(QString id, QObject *parent)
 StatusNotifierItem::~StatusNotifierItem()
 {
     mSessionBus.unregisterObject(QLatin1String("/StatusNotifierItem"));
-    mSessionBus.unregisterService(mService);
     QDBusConnection::disconnectFromBus(mService);
 }
 
@@ -79,7 +79,7 @@ void StatusNotifierItem::registerToHost()
                              QLatin1String("/StatusNotifierWatcher"),
                              QLatin1String("org.kde.StatusNotifierWatcher"),
                              mSessionBus);
-    interface.asyncCall(QLatin1String("RegisterStatusNotifierItem"), mService);
+    interface.asyncCall(QLatin1String("RegisterStatusNotifierItem"), mSessionBus.baseService());
 }
 
 void StatusNotifierItem::onServiceOwnerChanged(const QString& service, const QString& oldOwner,
@@ -95,6 +95,7 @@ void StatusNotifierItem::onServiceOwnerChanged(const QString& service, const QSt
 void StatusNotifierItem::onMenuDestroyed()
 {
     mMenu = nullptr;
+    setMenuPath(QLatin1String("/NO_DBUSMENU"));
     mMenuExporter = nullptr; //mMenu is a QObject parent of the mMenuExporter
 }
 
@@ -114,6 +115,14 @@ void StatusNotifierItem::setStatus(const QString &status)
 
     mStatus = status;
     Q_EMIT mAdaptor->NewStatus(mStatus);
+}
+
+void StatusNotifierItem::setCategory(const QString &category)
+{
+    if (mCategory == category)
+        return;
+
+    mCategory = category;
 }
 
 void StatusNotifierItem::setMenuPath(const QString& path)
@@ -230,7 +239,11 @@ void StatusNotifierItem::setContextMenu(QMenu* menu)
     }
     mMenu = menu;
 
-    setMenuPath(QLatin1String("/MenuBar"));
+    if (nullptr != mMenu)
+        setMenuPath(QLatin1String("/MenuBar"));
+    else
+        setMenuPath(QLatin1String("/NO_DBUSMENU"));
+
     //Note: we need to destroy menu exporter before creating new one -> to free the DBus object path for new menu
     delete mMenuExporter;
     if (nullptr != mMenu)
@@ -302,7 +315,12 @@ IconPixmapList StatusNotifierItem::iconToPixmapList(const QIcon& icon)
         if (image.format() != QImage::Format_ARGB32)
             image = image.convertToFormat(QImage::Format_ARGB32);
 
-        pix.bytes = QByteArray((char *) image.bits(), image.sizeInBytes());
+        pix.bytes = QByteArray((char *) image.bits(),
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+                               image.byteCount());
+#else
+                               image.sizeInBytes());
+#endif
 
         // swap to network byte order if we are little endian
         if (QSysInfo::ByteOrder == QSysInfo::LittleEndian)
