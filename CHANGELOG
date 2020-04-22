@@ -1,16 +1,28 @@
+lxqt-qtplugin-0.15.0 / 2020-04-22
+=================================
+  * Bumped version to 0.15.0.
+  * Made libfm-qt a dependency and loaded versioned libfm-qt (for versioned ".so" handling).
+  * C++11 code updates.
+  * Use return braced init list.
+  * Removed (duplicated) string casts definitions.
+  * Removed deprecated QImage method "byteCount()" and used "sizeInBytes()" instead.
+  * Fixed "#include" for libdbusmenu-qt.
+  * Added support for flatpak to StatusNotifierItem.
+  * Added Category property to StatusNotifierItem to fix working on some DEs.
+  * Added support for working without context menu to StatusNotifierItem.
 
 lxqt-qtplugin-0.14.0 / 2019-01-25
 =================================
 
   * Bumped version to 0.14.0
-  * Dynamically load libfm-qt on demand to create 
+  * Dynamically load libfm-qt on demand to create
     the file dialog helper.
-  * Don't use automatic string conversions 
+  * Don't use automatic string conversions
   * Improved cmake scripting
     - Set cmake_minimum_required to 3.1.0
     - Removed locale compile definitons
-    - Removed the superfluous libfm-qt dependency 
- 
+    - Removed the superfluous libfm-qt dependency
+
 lxqt-qtplugin-0.13.0 / 2018-05-21
 =================================
 
