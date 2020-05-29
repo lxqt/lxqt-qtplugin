@@ -97,6 +97,7 @@ private:
     // other Qt settings
     // widget
     QString style_;
+    QColor winColor_;
     QString fontStr_;
     QFont font_;
     QString fixedFontStr_;
