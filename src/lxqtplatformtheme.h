@@ -109,6 +109,8 @@ private:
     QFileSystemWatcher *settingsWatcher_;
     QString settingsFile_;
 
+    QPalette *LXQtPalette_;
+
     QStringList xdgIconThemePaths() const;
 };
 

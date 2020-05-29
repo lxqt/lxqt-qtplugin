@@ -57,6 +57,7 @@ static CreateFileDialogHelperFunc createFileDialogHelper = nullptr;
 LXQtPlatformTheme::LXQtPlatformTheme():
     iconFollowColorScheme_(true)
     , settingsWatcher_(nullptr)
+    , LXQtPalette_(nullptr)
 {
     loadSettings();
     // Note: When the plugin is loaded, it seems that the app is not yet running and
@@ -75,6 +76,8 @@ LXQtPlatformTheme::LXQtPlatformTheme():
 }
 
 LXQtPlatformTheme::~LXQtPlatformTheme() {
+    if(LXQtPalette_)
+        delete LXQtPalette_;
     if(settingsWatcher_)
         delete settingsWatcher_;
 }
@@ -95,6 +98,14 @@ void LXQtPlatformTheme::loadSettings() {
     // not necessarily to hard code the default values here.
     QSettings settings(QSettings::UserScope, QLatin1String("lxqt"), QLatin1String("lxqt"));
     settingsFile_ = settings.fileName();
+
+    // TODO: Qt 5.15 enforces Qt::gray. Later, we could have a completely configurable palette
+    // but, for now, only the window (button) color is set, with Fusion's window color as the fallback.
+    QColor winColor;
+    winColor.setNamedColor(settings.value(QLatin1String("window_color"), QLatin1String("#efefef")).toString());
+    if(!winColor.isValid())
+        winColor.setNamedColor(QStringLiteral("#efefef"));
+    LXQtPalette_ = new QPalette(winColor);
 
     // icon theme
     iconTheme_ = settings.value(QLatin1String("icon_theme"), QLatin1String("oxygen")).toString();
@@ -258,7 +269,11 @@ QPlatformDialogHelper *LXQtPlatformTheme::createPlatformDialogHelper(DialogType 
     return nullptr;
 }
 
-const QPalette *LXQtPlatformTheme::palette(Palette /*type*/) const {
+const QPalette *LXQtPlatformTheme::palette(Palette type) const {
+    if(type == QPlatformTheme::SystemPalette) {
+        if(LXQtPalette_)
+            return LXQtPalette_;
+    }
     return nullptr;
 }
 
@@ -356,7 +371,7 @@ QIconEngine *LXQtPlatformTheme::createIconEngine(const QString &iconName) const
 {
     return new XdgIconLoaderEngine(iconName);
 }
- 
+
 // Helper to return the icon theme paths from XDG.
 QStringList LXQtPlatformTheme::xdgIconThemePaths() const
 {
