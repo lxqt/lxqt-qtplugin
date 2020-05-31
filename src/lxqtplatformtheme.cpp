@@ -99,14 +99,6 @@ void LXQtPlatformTheme::loadSettings() {
     QSettings settings(QSettings::UserScope, QLatin1String("lxqt"), QLatin1String("lxqt"));
     settingsFile_ = settings.fileName();
 
-    // TODO: Qt 5.15 enforces Qt::gray. Later, we could have a completely configurable palette
-    // but, for now, only the window (button) color is set, with Fusion's window color as the fallback.
-    QColor winColor;
-    winColor.setNamedColor(settings.value(QLatin1String("window_color"), QLatin1String("#efefef")).toString());
-    if(!winColor.isValid())
-        winColor.setNamedColor(QStringLiteral("#efefef"));
-    LXQtPalette_ = new QPalette(winColor);
-
     // icon theme
     iconTheme_ = settings.value(QLatin1String("icon_theme"), QLatin1String("oxygen")).toString();
     iconFollowColorScheme_ = settings.value(QLatin1String("icon_follow_color_scheme"), iconFollowColorScheme_).toBool();
@@ -129,6 +121,20 @@ void LXQtPlatformTheme::loadSettings() {
 
     // widget style
     style_ = settings.value(QLatin1String("style"), QLatin1String("fusion")).toString();
+
+    // window color
+    // NOTE: Later, we might add more colors but, for now, only the window
+    // (= button) color is set, with Fusion's window color as the fallback.
+    QColor oldWinColor = winColor_;
+    winColor_.setNamedColor(settings.value(QLatin1String("window_color"), QLatin1String("#efefef")).toString());
+    if(!winColor_.isValid())
+        winColor_.setNamedColor(QStringLiteral("#efefef"));
+    if(oldWinColor != winColor_)
+    {
+        if(LXQtPalette_)
+            delete LXQtPalette_;
+        LXQtPalette_ = new QPalette(winColor_);
+    }
 
     // SystemFont
     fontStr_ = settings.value(QLatin1String("font")).toString();
@@ -178,17 +184,22 @@ void LXQtPlatformTheme::onSettingsChanged() {
     // update the settings and repaint the UI. We need to do it ourselves
     // through dirty hacks and private Qt internal APIs.
     QString oldStyle = style_;
+    QColor oldWinColor = winColor_;
     QString oldIconTheme = iconTheme_;
     QString oldFont = fontStr_;
     QString oldFixedFont = fixedFontStr_;
 
     loadSettings(); // reload the config file
 
-    if(style_ != oldStyle) // the widget style is changed
+    if(style_ != oldStyle || winColor_ != oldWinColor) // the widget style or window color is changed
     {
         // ask Qt5 to apply the new style
-        if (qobject_cast<QApplication *>(QCoreApplication::instance()))
+        if(qobject_cast<QApplication *>(QCoreApplication::instance()))
+        {
             QApplication::setStyle(style_);
+            if(LXQtPalette_)
+                QApplication::setPalette(*LXQtPalette_); // Qt 5.15 needs this and it's safe otherwise
+        }
     }
 
     if(iconTheme_ != oldIconTheme) { // the icon theme is changed
@@ -223,6 +234,10 @@ void LXQtPlatformTheme::onSettingsChanged() {
         // Qt5 added a QEvent::ThemeChange event.
         QEvent event(QEvent::ThemeChange);
         QApplication::sendEvent(widget, &event);
+        // Also, set the palette because it may not be updated for some widgets.
+        // WARNING: The app palette should be used, not LXQtPalette_, because
+        // some widget styles have their own palettes.
+        widget->setPalette(QApplication::palette());
     }
 }
 
