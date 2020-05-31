@@ -1,3 +1,8 @@
+lxqt-qtplugin-0.15.1 / 2020-05-31
+=================================
+  * Fixed Breeze's window color with Qt 5.15.
+  * Made the window color configurable.
+
 lxqt-qtplugin-0.15.0 / 2020-04-22
 =================================
   * Bumped version to 0.15.0.
