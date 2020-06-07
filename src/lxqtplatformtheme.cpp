@@ -234,10 +234,6 @@ void LXQtPlatformTheme::onSettingsChanged() {
         // Qt5 added a QEvent::ThemeChange event.
         QEvent event(QEvent::ThemeChange);
         QApplication::sendEvent(widget, &event);
-        // Also, set the palette because it may not be updated for some widgets.
-        // WARNING: The app palette should be used, not LXQtPalette_, because
-        // some widget styles have their own palettes.
-        widget->setPalette(QApplication::palette());
     }
 }
 
