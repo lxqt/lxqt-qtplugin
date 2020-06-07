@@ -134,6 +134,9 @@ void LXQtPlatformTheme::loadSettings() {
         if(LXQtPalette_)
             delete LXQtPalette_;
         LXQtPalette_ = new QPalette(winColor_);
+        // Qt's default highlight color and that of Fusion may be different. This is a workaround:
+        LXQtPalette_->setColor(QPalette::Highlight, QColor(60, 140, 230));
+        LXQtPalette_->setColor(QPalette::HighlightedText, QColor(255, 255, 255));
     }
 
     // SystemFont
