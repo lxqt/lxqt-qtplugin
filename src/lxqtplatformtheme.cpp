@@ -116,28 +116,114 @@ void LXQtPlatformTheme::loadSettings() {
     // single click activation
     singleClickActivate_ = settings.value(QLatin1String("single_click_activate")).toBool();
 
+    // palette
+    settings.beginGroup(QLatin1String("Palette"));
+    paletteChanged_ = false;
+
+    QColor color = winColor_;
+    winColor_.setNamedColor(settings.value(QLatin1String("window_color"), QLatin1String("#efefef")).toString());
+    if(!winColor_.isValid())
+        winColor_.setNamedColor(QStringLiteral("#efefef"));
+    paletteChanged_ = color != winColor_;
+
+    color = baseColor_;
+    baseColor_.setNamedColor(settings.value(QLatin1String("base_color")).toString());
+    if (!paletteChanged_)
+        paletteChanged_ = baseColor_.isValid() && color != baseColor_;
+
+    color = highlightColor_;
+    highlightColor_.setNamedColor(settings.value(QLatin1String("highlight_color")).toString());
+    if (!paletteChanged_)
+        paletteChanged_ = highlightColor_.isValid() && color != highlightColor_;
+
+    color = winTextColor_;
+    winTextColor_.setNamedColor(settings.value(QLatin1String("window_text_color")).toString());
+    if (!paletteChanged_)
+        paletteChanged_ = winTextColor_.isValid() && color != winTextColor_;
+
+    color = textColor_;
+    textColor_.setNamedColor(settings.value(QLatin1String("text_color")).toString());
+    if (!paletteChanged_)
+        paletteChanged_ = textColor_.isValid() && color != textColor_;
+
+    color = highlightedTextColor_;
+    highlightedTextColor_.setNamedColor(settings.value(QLatin1String("highlighted_text_color")).toString());
+    if (!paletteChanged_)
+        paletteChanged_ = color != highlightedTextColor_.isValid() && color != highlightedTextColor_;
+
+    color = linkColor_;
+    linkColor_.setNamedColor(settings.value(QLatin1String("link_color")).toString());
+    if (!paletteChanged_)
+        paletteChanged_ = linkColor_.isValid() && color != linkColor_;
+
+    color = linkVisitedColor_;
+    linkVisitedColor_.setNamedColor(settings.value(QLatin1String("link_visited_color")).toString());
+    if (!paletteChanged_)
+        paletteChanged_ = linkVisitedColor_.isValid() && color != linkVisitedColor_;
+
+    if(paletteChanged_)
+    {
+        if(LXQtPalette_)
+            delete LXQtPalette_;
+        // This sets all colors appropriately but valid custom colors are set below.
+        // If a custom color is not valid, Qt's calculated color will be used.
+        LXQtPalette_ = new QPalette(winColor_);
+
+        if (baseColor_.isValid())
+        {
+            LXQtPalette_->setColor(QPalette::Base, baseColor_);
+            // See Qt -> qpalette.cpp -> qt_fusionPalette()
+            LXQtPalette_->setColor(QPalette::Disabled, QPalette::Base, winColor_);
+        }
+        if (highlightColor_.isValid())
+        {
+            LXQtPalette_->setColor(QPalette::Highlight, highlightColor_);
+            int gray = qGray(highlightColor_.rgb());
+            color = QColor(gray, gray, gray);
+            LXQtPalette_->setColor(QPalette::Disabled, QPalette::Highlight, color);
+        }
+        else
+        {
+            // Qt's default highlight color and that of Fusion may be different. This is a workaround:
+            LXQtPalette_->setColor(QPalette::Highlight, QColor(60, 140, 230));
+            if (highlightedTextColor_.isValid())
+                LXQtPalette_->setColor(QPalette::HighlightedText, QColor(255, 255, 255));
+        }
+        if (winTextColor_.isValid())
+        {
+            LXQtPalette_->setColor(QPalette::WindowText, winTextColor_);
+            LXQtPalette_->setColor(QPalette::ButtonText, winTextColor_);
+            color = winTextColor_;
+            color.setAlpha(130);
+            LXQtPalette_->setColor(QPalette::Disabled, QPalette::WindowText, color);
+            LXQtPalette_->setColor(QPalette::Disabled, QPalette::ButtonText, color);
+        }
+        if (textColor_.isValid())
+        {
+            LXQtPalette_->setColor(QPalette::Text, textColor_);
+            color = textColor_;
+            color.setAlpha(130);
+            LXQtPalette_->setColor(QPalette::Disabled, QPalette::Text, color);
+        }
+        if (highlightedTextColor_.isValid())
+        {
+            LXQtPalette_->setColor(QPalette::HighlightedText, highlightedTextColor_);
+            color = highlightedTextColor_;
+            color.setAlpha(130);
+            LXQtPalette_->setColor(QPalette::Disabled, QPalette::HighlightedText, color);
+        }
+        if (linkColor_.isValid())
+            LXQtPalette_->setColor(QPalette::Link, linkColor_);
+        if (linkVisitedColor_.isValid())
+            LXQtPalette_->setColor(QPalette::LinkVisited, linkVisitedColor_);
+    }
+    settings.endGroup();
+
     // load Qt settings
     settings.beginGroup(QLatin1String("Qt"));
 
     // widget style
     style_ = settings.value(QLatin1String("style"), QLatin1String("fusion")).toString();
-
-    // window color
-    // NOTE: Later, we might add more colors but, for now, only the window
-    // (= button) color is set, with Fusion's window color as the fallback.
-    QColor oldWinColor = winColor_;
-    winColor_.setNamedColor(settings.value(QLatin1String("window_color"), QLatin1String("#efefef")).toString());
-    if(!winColor_.isValid())
-        winColor_.setNamedColor(QStringLiteral("#efefef"));
-    if(oldWinColor != winColor_)
-    {
-        if(LXQtPalette_)
-            delete LXQtPalette_;
-        LXQtPalette_ = new QPalette(winColor_);
-        // Qt's default highlight color and that of Fusion may be different. This is a workaround:
-        LXQtPalette_->setColor(QPalette::Highlight, QColor(60, 140, 230));
-        LXQtPalette_->setColor(QPalette::HighlightedText, QColor(255, 255, 255));
-    }
 
     // SystemFont
     fontStr_ = settings.value(QLatin1String("font")).toString();
@@ -187,21 +273,25 @@ void LXQtPlatformTheme::onSettingsChanged() {
     // update the settings and repaint the UI. We need to do it ourselves
     // through dirty hacks and private Qt internal APIs.
     QString oldStyle = style_;
-    QColor oldWinColor = winColor_;
     QString oldIconTheme = iconTheme_;
     QString oldFont = fontStr_;
     QString oldFixedFont = fixedFontStr_;
 
     loadSettings(); // reload the config file
 
-    if(style_ != oldStyle || winColor_ != oldWinColor) // the widget style or window color is changed
+    if(style_ != oldStyle || paletteChanged_) // the widget style or palette is changed
     {
         // ask Qt5 to apply the new style
-        if(qobject_cast<QApplication *>(QCoreApplication::instance()))
+        if(auto app = qobject_cast<QApplication *>(QCoreApplication::instance()))
         {
             QApplication::setStyle(style_);
+            // Qt 5.15 needs this and it's safe otherwise
             if(LXQtPalette_)
-                QApplication::setPalette(*LXQtPalette_); // Qt 5.15 needs this and it's safe otherwise
+            {
+                QApplication::setPalette(*LXQtPalette_);
+                // the app should be polished because the style may have an internal palette
+                QApplication::style()->polish(app);
+            }
         }
     }
 

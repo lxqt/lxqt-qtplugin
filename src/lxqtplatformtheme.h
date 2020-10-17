@@ -97,7 +97,10 @@ private:
     // other Qt settings
     // widget
     QString style_;
-    QColor winColor_;
+    QColor winColor_, baseColor_, highlightColor_,
+           winTextColor_, textColor_, highlightedTextColor_,
+           linkColor_, linkVisitedColor_;
+    bool paletteChanged_;
     QString fontStr_;
     QFont font_;
     QString fixedFontStr_;
