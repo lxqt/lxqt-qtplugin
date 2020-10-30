@@ -1,3 +1,8 @@
+lxqt-qtplugin-0.16.0 / 2020-11-01
+=================================
+  * Do not reset widget palettes on changing style.
+  * Support more palette colors for better customization.
+
 lxqt-qtplugin-0.15.1 / 2020-05-31
 =================================
   * Fixed Fusion's window color with Qt 5.15.
