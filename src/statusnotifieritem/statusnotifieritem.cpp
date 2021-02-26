@@ -272,7 +272,7 @@ void StatusNotifierItem::SecondaryActivate(int x, int y)
 
 void StatusNotifierItem::ContextMenu(int x, int y)
 {
-    if (mMenu)
+    if (mMenu != nullptr)
     {
         if (mMenu->isVisible())
             mMenu->popup(QPoint(x, y));

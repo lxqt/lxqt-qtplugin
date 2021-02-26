@@ -40,7 +40,7 @@ public:
 };
 
 QPlatformTheme *LXQtPlatformThemePlugin::create(const QString &key, const QStringList &/*params*/) {
-    if (!key.compare(QLatin1String("lxqt"), Qt::CaseInsensitive))
+    if (key.compare(QLatin1String("lxqt"), Qt::CaseInsensitive) == 0)
         return new LXQtPlatformTheme();
     return nullptr;
 }
