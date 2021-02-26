@@ -76,10 +76,8 @@ LXQtPlatformTheme::LXQtPlatformTheme():
 }
 
 LXQtPlatformTheme::~LXQtPlatformTheme() {
-    if(LXQtPalette_)
-        delete LXQtPalette_;
-    if(settingsWatcher_)
-        delete settingsWatcher_;
+    delete LXQtPalette_;
+    delete settingsWatcher_;
 }
 
 void LXQtPlatformTheme::lazyInit()
@@ -163,8 +161,7 @@ void LXQtPlatformTheme::loadSettings() {
 
     if(paletteChanged_)
     {
-        if(LXQtPalette_)
-            delete LXQtPalette_;
+        delete LXQtPalette_;
         // This sets all colors appropriately but valid custom colors are set below.
         // If a custom color is not valid, Qt's calculated color will be used.
         LXQtPalette_ = new QPalette(winColor_);
