@@ -149,7 +149,7 @@ void LXQtPlatformTheme::loadSettings() {
     color = highlightedTextColor_;
     highlightedTextColor_.setNamedColor(settings.value(QLatin1String("highlighted_text_color")).toString());
     if (!paletteChanged_)
-        paletteChanged_ = color != highlightedTextColor_.isValid() && color != highlightedTextColor_;
+        paletteChanged_ = highlightedTextColor_.isValid() && color != highlightedTextColor_;
 
     color = linkColor_;
     linkColor_.setNamedColor(settings.value(QLatin1String("link_color")).toString());
