@@ -45,7 +45,7 @@ SystemTrayMenu::SystemTrayMenu()
 
 SystemTrayMenu::~SystemTrayMenu()
 {
-    if (m_menu)
+    if (m_menu != nullptr)
         m_menu->deleteLater();
 }
 
@@ -67,7 +67,7 @@ void SystemTrayMenu::insertMenuItem(QPlatformMenuItem *menuItem, QPlatformMenuIt
                 if (*it == oursBefore)
                 {
                     m_items.insert(it, ours);
-                    if (m_menu)
+                    if (m_menu != nullptr)
                         m_menu->insertAction(oursBefore->action(), ours->action());
 
                     inserted = true;
@@ -79,7 +79,7 @@ void SystemTrayMenu::insertMenuItem(QPlatformMenuItem *menuItem, QPlatformMenuIt
         if (!inserted)
         {
             m_items.append(ours);
-            if (m_menu)
+            if (m_menu != nullptr)
                 m_menu->addAction(ours->action());
         }
     }
@@ -111,14 +111,14 @@ void SystemTrayMenu::removeMenuItem(QPlatformMenuItem *menuItem)
     if (SystemTrayMenuItem *ours = qobject_cast<SystemTrayMenuItem*>(menuItem))
     {
         m_items.removeOne(ours);
-        if (ours->action() && m_menu)
+        if ((ours->action() != nullptr) && (m_menu != nullptr))
             m_menu->removeAction(ours->action());
     }
 }
 
 void SystemTrayMenu::setEnabled(bool enabled)
 {
-    if (!m_menu)
+    if (m_menu == nullptr)
         return;
 
     m_menu->setEnabled(enabled);
@@ -126,7 +126,7 @@ void SystemTrayMenu::setEnabled(bool enabled)
 
 void SystemTrayMenu::setIcon(const QIcon &icon)
 {
-    if (!m_menu)
+    if (m_menu == nullptr)
         return;
 
     m_menu->setIcon(icon);
@@ -139,7 +139,7 @@ void SystemTrayMenu::setTag(quintptr tag)
 
 void SystemTrayMenu::setText(const QString &text)
 {
-    if (!m_menu)
+    if (m_menu == nullptr)
         return;
 
     m_menu->setTitle(text);
@@ -147,7 +147,7 @@ void SystemTrayMenu::setText(const QString &text)
 
 void SystemTrayMenu::setVisible(bool visible)
 {
-    if (!m_menu)
+    if (m_menu == nullptr)
         return;
 
     m_menu->setVisible(visible);
@@ -160,7 +160,7 @@ void SystemTrayMenu::syncMenuItem(QPlatformMenuItem *)
 
 void SystemTrayMenu::syncSeparatorsCollapsible(bool enable)
 {
-    if (!m_menu)
+    if (m_menu == nullptr)
         return;
 
     m_menu->setSeparatorsCollapsible(enable);
@@ -279,7 +279,7 @@ LXQtSystemTrayIcon::~LXQtSystemTrayIcon()
 
 void LXQtSystemTrayIcon::init()
 {
-    if (!mSni)
+    if (mSni == nullptr)
     {
         mSni = new StatusNotifierItem(QString::number(QCoreApplication::applicationPid()), this);
         mSni->setTitle(QApplication::applicationDisplayName());
@@ -315,7 +315,7 @@ void LXQtSystemTrayIcon::cleanup()
 
 void LXQtSystemTrayIcon::updateIcon(const QIcon &icon)
 {
-    if (!mSni)
+    if (mSni == nullptr)
         return;
 
     if (icon.name().isEmpty())
@@ -332,7 +332,7 @@ void LXQtSystemTrayIcon::updateIcon(const QIcon &icon)
 
 void LXQtSystemTrayIcon::updateToolTip(const QString &tooltip)
 {
-    if (!mSni)
+    if (mSni == nullptr)
         return;
 
     mSni->setToolTipTitle(tooltip);
@@ -340,7 +340,7 @@ void LXQtSystemTrayIcon::updateToolTip(const QString &tooltip)
 
 void LXQtSystemTrayIcon::updateMenu(QPlatformMenu *menu)
 {
-    if (!mSni)
+    if (mSni == nullptr)
         return;
 
     if (SystemTrayMenu *ourMenu = qobject_cast<SystemTrayMenu*>(menu))
@@ -361,7 +361,7 @@ QRect LXQtSystemTrayIcon::geometry() const
 void LXQtSystemTrayIcon::showMessage(const QString &title, const QString &msg,
                                      const QIcon &icon, MessageIcon, int secs)
 {
-    if (!mSni)
+    if (mSni == nullptr)
         return;
 
     mSni->showMessage(title, msg, icon.name(), secs);

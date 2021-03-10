@@ -76,10 +76,8 @@ LXQtPlatformTheme::LXQtPlatformTheme():
 }
 
 LXQtPlatformTheme::~LXQtPlatformTheme() {
-    if(LXQtPalette_)
-        delete LXQtPalette_;
-    if(settingsWatcher_)
-        delete settingsWatcher_;
+    delete LXQtPalette_;
+    delete settingsWatcher_;
 }
 
 void LXQtPlatformTheme::lazyInit()
@@ -163,8 +161,7 @@ void LXQtPlatformTheme::loadSettings() {
 
     if(paletteChanged_)
     {
-        if(LXQtPalette_)
-            delete LXQtPalette_;
+        delete LXQtPalette_;
         // This sets all colors appropriately but valid custom colors are set below.
         // If a custom color is not valid, Qt's calculated color will be used.
         LXQtPalette_ = new QPalette(winColor_);
@@ -286,7 +283,7 @@ void LXQtPlatformTheme::onSettingsChanged() {
         {
             QApplication::setStyle(style_);
             // Qt 5.15 needs this and it's safe otherwise
-            if(LXQtPalette_)
+            if(LXQtPalette_ != nullptr)
             {
                 QApplication::setPalette(*LXQtPalette_);
                 // the app should be polished because the style may have an internal palette
@@ -332,7 +329,7 @@ void LXQtPlatformTheme::onSettingsChanged() {
 
 bool LXQtPlatformTheme::usePlatformNativeDialog(DialogType type) const {
     if(type == FileDialog
-       && qobject_cast<QApplication *>(QCoreApplication::instance())) { // QML may not have qApp
+       && (qobject_cast<QApplication *>(QCoreApplication::instance()) != nullptr)) { // QML may not have qApp
         // use our own file dialog
         return true;
     }
@@ -342,7 +339,7 @@ bool LXQtPlatformTheme::usePlatformNativeDialog(DialogType type) const {
 
 QPlatformDialogHelper *LXQtPlatformTheme::createPlatformDialogHelper(DialogType type) const {
     if(type == FileDialog
-       && qobject_cast<QApplication *>(QCoreApplication::instance())) { // QML may not have qApp
+       && (qobject_cast<QApplication *>(QCoreApplication::instance()) != nullptr)) { // QML may not have qApp
         // use our own file dialog provided by libfm
 
         // When a process has this environment set, that means glib event loop integration is disabled.
@@ -362,7 +359,7 @@ QPlatformDialogHelper *LXQtPlatformTheme::createPlatformDialogHelper(DialogType 
 
             // try to resolve the symbol to get the function pointer
             createFileDialogHelper = reinterpret_cast<CreateFileDialogHelperFunc>(libfmQtLibrary.resolve("createFileDialogHelper"));
-            if(!createFileDialogHelper) {
+            if(createFileDialogHelper == nullptr) {
                 return nullptr;
             }
         }
@@ -375,7 +372,7 @@ QPlatformDialogHelper *LXQtPlatformTheme::createPlatformDialogHelper(DialogType 
 
 const QPalette *LXQtPlatformTheme::palette(Palette type) const {
     if(type == QPlatformTheme::SystemPalette) {
-        if(LXQtPalette_)
+        if(LXQtPalette_ != nullptr)
             return LXQtPalette_;
     }
     return nullptr;
