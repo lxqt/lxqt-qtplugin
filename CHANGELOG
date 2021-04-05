@@ -1,3 +1,10 @@
+lxqt-qtplugin-0.17.0 / 2021-04-15
+=================================
+  * Handled Qt 5.15 deprecations.
+  * Don't check before deleting a pointer.
+  * Don't use implicit conversions.
+  * Fixed a palette/highlight color related typo.
+
 lxqt-qtplugin-0.16.0 / 2020-11-01
 =================================
   * Do not reset widget palettes on changing style.
