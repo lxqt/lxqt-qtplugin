@@ -169,8 +169,17 @@ void LXQtPlatformTheme::loadSettings() {
         if (baseColor_.isValid())
         {
             LXQtPalette_->setColor(QPalette::Base, baseColor_);
-            // See Qt -> qpalette.cpp -> qt_fusionPalette()
-            LXQtPalette_->setColor(QPalette::Disabled, QPalette::Base, winColor_);
+            // Qt makes the alternate base color (used by some item views) by mixing the button
+            // color (= window color) and base color. That can result in unreadable texts when
+            // the base and window colors have a high contrast with each other.
+            color = baseColor_;
+            int l = color.lightness();
+            if (l < 127)
+                l += 10;
+            else
+                l -= 10;
+            color.setHsl(color.hue(), color.saturation(), l);
+            LXQtPalette_->setColor(QPalette::AlternateBase, color);
         }
         if (highlightColor_.isValid())
         {
