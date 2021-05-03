@@ -317,11 +317,7 @@ IconPixmapList StatusNotifierItem::iconToPixmapList(const QIcon& icon)
             image = image.convertToFormat(QImage::Format_ARGB32);
 
         pix.bytes = QByteArray((char *) image.bits(),
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-                               image.byteCount());
-#else
                                image.sizeInBytes());
-#endif
 
         // swap to network byte order if we are little endian
         if (QSysInfo::ByteOrder == QSysInfo::LittleEndian)
