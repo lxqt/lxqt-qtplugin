@@ -28,14 +28,14 @@
 #ifndef LXQTPLATFORMTHEME_H
 #define LXQTPLATFORMTHEME_H
 
-#include "lxqtsystemtrayicon.h"
-
 #include <qpa/qplatformtheme.h> // this private header is subject to changes
+#include <QtThemeSupport/private/qdbustrayicon_p.h>
 #include <QtGlobal>
 #include <QVariant>
 #include <QString>
 #include <QFileSystemWatcher>
 #include <QFont>
+#include <QColor>
 
 class Q_GUI_EXPORT LXQtPlatformTheme : public QObject, public QPlatformTheme {
     Q_OBJECT
@@ -58,14 +58,14 @@ public:
 
     QPlatformSystemTrayIcon *createPlatformSystemTrayIcon() const override
     {
-        auto trayIcon = new LXQtSystemTrayIcon;
-        if (trayIcon->isSystemTrayAvailable())
-            return trayIcon;
-        else
+        // Simplified from QGenericUnixTheme::createPlatformSystemTrayIcon()
+        // https://github.com/qt/qtbase/blob/v5.15.2/src/platformsupport/themes/genericunix/qgenericunixthemes.cpp
+        QDBusMenuConnection conn;
+        if (conn.isStatusNotifierHostRegistered())
         {
-            delete trayIcon;
-            return nullptr;
+            return new QDBusTrayIcon();
         }
+        return nullptr;
     }
 
     // virtual QPixmap standardPixmap(StandardPixmap sp, const QSizeF &size) const;

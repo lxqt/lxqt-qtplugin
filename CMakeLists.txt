@@ -18,12 +18,11 @@ set(QT_MINIMUM_VERSION "5.15.0")
 set(QTXDG_MINIMUM_VERSION "3.8.0")
 set(FMQT_MINIMUM_VERSION "1.0.0")
 
-find_package(Qt5DBus ${QT_MINIMUM_VERSION} REQUIRED)
 find_package(Qt5LinguistTools ${QT_MINIMUM_VERSION} REQUIRED)
 find_package(Qt5Widgets ${QT_MINIMUM_VERSION} REQUIRED)
+find_package(Qt5ThemeSupport ${QT_MINIMUM_VERSION} REQUIRED)
 find_package(Qt5XdgIconLoader ${QTXDG_MINIMUM_VERSION} REQUIRED)
 find_package(lxqt-build-tools ${LXQTBT_MINIMUM_VERSION} REQUIRED)
-find_package(dbusmenu-qt5 REQUIRED)
 find_package(fm-qt ${FMQT_MINIMUM_VERSION} REQUIRED)
 
 get_target_property(LIB_FM_QT_CONFIGURATIONS fm-qt IMPORTED_CONFIGURATIONS)

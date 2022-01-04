@@ -5,23 +5,11 @@ include_directories(
 
 set(qtlxqt_HDRS
     lxqtplatformtheme.h
-    lxqtsystemtrayicon.h
-    statusnotifieritem/statusnotifieritem.h
-    statusnotifieritem/dbustypes.h
 )
 
 set(qtlxqt_SRCS
     main.cpp
     lxqtplatformtheme.cpp
-    lxqtsystemtrayicon.cpp
-    statusnotifieritem/statusnotifieritem.cpp
-    statusnotifieritem/dbustypes.cpp
-)
-
-qt5_add_dbus_adaptor(qtlxqt_SRCS
-    statusnotifieritem/org.kde.StatusNotifierItem.xml
-    statusnotifieritem/statusnotifieritem.h
-    StatusNotifierItem
 )
 
 add_library(qtlxqt MODULE ${qtlxqt_HDRS} ${qtlxqt_SRCS})
@@ -34,8 +22,7 @@ target_compile_definitions(qtlxqt
 
 target_link_libraries(qtlxqt
     Qt5::Widgets
-    Qt5::DBus
-    dbusmenu-qt5
+    Qt5::ThemeSupportPrivate
     Qt5XdgIconLoader
 )
 
