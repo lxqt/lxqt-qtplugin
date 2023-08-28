@@ -114,6 +114,9 @@ void LXQtPlatformTheme::loadSettings() {
     // single click activation
     singleClickActivate_ = settings.value(QLatin1String("single_click_activate")).toBool();
 
+    // showing context menus on releasing right mouse button
+    contextMenuOnMouseRelease_ = settings.value(QLatin1String("context_menu_on_mouse_release")).toBool();
+
     // palette
     settings.beginGroup(QLatin1String("Palette"));
     paletteChanged_ = false;
@@ -460,7 +463,7 @@ QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
     case DialogSnapToDefaultButton:
         break;
     case ContextMenuOnMouseRelease:
-        break;
+        return QVariant(contextMenuOnMouseRelease_);
     case MousePressAndHoldInterval:
         break;
     case MouseDoubleClickDistance:
