@@ -288,7 +288,7 @@ void LXQtPlatformTheme::onSettingsChanged() {
     if(style_ != oldStyle || paletteChanged_) // the widget style or palette is changed
     {
         // ask Qt5 to apply the new style
-        if(auto app = qobject_cast<QApplication *>(QCoreApplication::instance()))
+        if(auto *app = qobject_cast<QApplication *>(QCoreApplication::instance()))
         {
             QApplication::setStyle(style_);
             // Qt 5.15 needs this and it's safe otherwise
