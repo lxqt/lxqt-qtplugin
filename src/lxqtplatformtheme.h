@@ -59,7 +59,7 @@ public:
 
     QPlatformSystemTrayIcon *createPlatformSystemTrayIcon() const override
     {
-        auto *trayIcon = new LXQtSystemTrayIcon;
+        auto trayIcon = new LXQtSystemTrayIcon;
         if (trayIcon->isSystemTrayAvailable())
             return trayIcon;
         else
