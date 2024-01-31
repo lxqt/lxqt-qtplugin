@@ -451,8 +451,6 @@ QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
         break;
     case SpellCheckUnderlineStyle:
         break;
-    case TabAllWidgets:
-        break;
     case IconPixmapSizes:
         break;
     case PasswordMaskCharacter:
