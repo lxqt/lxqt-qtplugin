@@ -119,43 +119,43 @@ void LXQtPlatformTheme::loadSettings() {
     paletteChanged_ = false;
 
     QColor color = winColor_;
-    winColor_.setNamedColor(settings.value(QLatin1String("window_color"), QLatin1String("#efefef")).toString());
+    winColor_ = QColor::fromString(settings.value(QLatin1String("window_color"), QLatin1String("#efefef")).toString());
     if(!winColor_.isValid())
-        winColor_.setNamedColor(QStringLiteral("#efefef"));
+        winColor_ = QColor::fromString(QStringLiteral("#efefef"));
     paletteChanged_ = color != winColor_;
 
     color = baseColor_;
-    baseColor_.setNamedColor(settings.value(QLatin1String("base_color")).toString());
+    baseColor_ = QColor::fromString(settings.value(QLatin1String("base_color")).toString());
     if (!paletteChanged_)
         paletteChanged_ = baseColor_.isValid() && color != baseColor_;
 
     color = highlightColor_;
-    highlightColor_.setNamedColor(settings.value(QLatin1String("highlight_color")).toString());
+    highlightColor_ = QColor::fromString(settings.value(QLatin1String("highlight_color")).toString());
     if (!paletteChanged_)
         paletteChanged_ = highlightColor_.isValid() && color != highlightColor_;
 
     color = winTextColor_;
-    winTextColor_.setNamedColor(settings.value(QLatin1String("window_text_color")).toString());
+    winTextColor_ = QColor::fromString(settings.value(QLatin1String("window_text_color")).toString());
     if (!paletteChanged_)
         paletteChanged_ = winTextColor_.isValid() && color != winTextColor_;
 
     color = textColor_;
-    textColor_.setNamedColor(settings.value(QLatin1String("text_color")).toString());
+    textColor_ = QColor::fromString(settings.value(QLatin1String("text_color")).toString());
     if (!paletteChanged_)
         paletteChanged_ = textColor_.isValid() && color != textColor_;
 
     color = highlightedTextColor_;
-    highlightedTextColor_.setNamedColor(settings.value(QLatin1String("highlighted_text_color")).toString());
+    highlightedTextColor_ = QColor::fromString(settings.value(QLatin1String("highlighted_text_color")).toString());
     if (!paletteChanged_)
         paletteChanged_ = highlightedTextColor_.isValid() && color != highlightedTextColor_;
 
     color = linkColor_;
-    linkColor_.setNamedColor(settings.value(QLatin1String("link_color")).toString());
+    linkColor_ = QColor::fromString(settings.value(QLatin1String("link_color")).toString());
     if (!paletteChanged_)
         paletteChanged_ = linkColor_.isValid() && color != linkColor_;
 
     color = linkVisitedColor_;
-    linkVisitedColor_.setNamedColor(settings.value(QLatin1String("link_visited_color")).toString());
+    linkVisitedColor_ = QColor::fromString(settings.value(QLatin1String("link_visited_color")).toString());
     if (!paletteChanged_)
         paletteChanged_ = linkVisitedColor_.isValid() && color != linkVisitedColor_;
 
@@ -288,7 +288,7 @@ void LXQtPlatformTheme::onSettingsChanged() {
     if(style_ != oldStyle || paletteChanged_) // the widget style or palette is changed
     {
         // ask Qt5 to apply the new style
-        if(auto *app = qobject_cast<QApplication *>(QCoreApplication::instance()))
+        if(auto app = qobject_cast<QApplication *>(QCoreApplication::instance()))
         {
             QApplication::setStyle(style_);
             // Qt 5.15 needs this and it's safe otherwise
@@ -450,8 +450,6 @@ QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
     case UiEffects:
         break;
     case SpellCheckUnderlineStyle:
-        break;
-    case TabAllWidgets:
         break;
     case IconPixmapSizes:
         break;

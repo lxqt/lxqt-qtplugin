@@ -36,6 +36,7 @@
 #include <QString>
 #include <QFileSystemWatcher>
 #include <QFont>
+#include <QColor>
 
 class Q_GUI_EXPORT LXQtPlatformTheme : public QObject, public QPlatformTheme {
     Q_OBJECT
@@ -58,7 +59,7 @@ public:
 
     QPlatformSystemTrayIcon *createPlatformSystemTrayIcon() const override
     {
-        auto *trayIcon = new LXQtSystemTrayIcon;
+        auto trayIcon = new LXQtSystemTrayIcon;
         if (trayIcon->isSystemTrayAvailable())
             return trayIcon;
         else
