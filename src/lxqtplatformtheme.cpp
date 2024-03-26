@@ -233,9 +233,13 @@ void LXQtPlatformTheme::loadSettings() {
 
     // SystemFont
     fontStr_ = settings.value(QLatin1String("font")).toString();
+
     if(!fontStr_.isEmpty()) {
-        if(font_.fromString(fontStr_))
-            QApplication::setFont(font_); // it seems that we need to do this manually.
+        if(font_.fromString(fontStr_)) {
+            if(qobject_cast<QApplication *>(QCoreApplication::instance())) {
+                QApplication::setFont(font_); // it seems that we need to do this manually.
+            }
+        }
     }
 
     // FixedFont
@@ -285,24 +289,23 @@ void LXQtPlatformTheme::onSettingsChanged() {
 
     loadSettings(); // reload the config file
 
-    if(style_ != oldStyle || paletteChanged_) // the widget style or palette is changed
+    auto app = qobject_cast<QApplication *>(QCoreApplication::instance());
+
+    if(app && (style_ != oldStyle || paletteChanged_)) // the widget style or palette is changed
     {
-        // ask Qt5 to apply the new style
-        if(auto app = qobject_cast<QApplication *>(QCoreApplication::instance()))
+        // ask Qt to apply the new style
+        QApplication::setStyle(style_);
+        // Qt 5.15 needs this and it's safe otherwise
+        if(LXQtPalette_ != nullptr)
         {
-            QApplication::setStyle(style_);
-            // Qt 5.15 needs this and it's safe otherwise
-            if(LXQtPalette_ != nullptr)
-            {
-                QApplication::setPalette(*LXQtPalette_);
-                // the app should be polished because the style may have an internal palette
-                QApplication::style()->polish(app);
-            }
+            QApplication::setPalette(*LXQtPalette_);
+            // the app should be polished because the style may have an internal palette
+            QApplication::style()->polish(app);
         }
     }
 
     if(iconTheme_ != oldIconTheme) { // the icon theme is changed
-        XdgIconLoader::instance()->updateSystemTheme(); // this is a private internal API of Qt5.
+        XdgIconLoader::instance()->updateSystemTheme(); // this is a private internal API of Qt.
     }
     XdgIconLoader::instance()->setFollowColorScheme(iconFollowColorScheme_);
 
@@ -321,18 +324,23 @@ void LXQtPlatformTheme::onSettingsChanged() {
         // FIXME: should we call the internal API: QApplicationPrivate::setFont() instead?
         // QGtkStyle does this internally.
         fixedFont_.fromString(fixedFontStr_); // FIXME: how to set this to the app?
-        if(font_.fromString(fontStr_))
-            QApplication::setFont(font_);
+        if(font_.fromString(fontStr_)) {
+            if(app) {
+                QApplication::setFont(font_);
+            }
+        }
     }
 
-    QApplication::setWheelScrollLines(wheelScrollLines_.toInt());
+    if(app) {
+        QApplication::setWheelScrollLines(wheelScrollLines_.toInt());
 
-    // emit a ThemeChange event to all widgets
-    const auto widgets = QApplication::allWidgets();
-    for(QWidget* const widget : widgets) {
-        // Qt5 added a QEvent::ThemeChange event.
-        QEvent event(QEvent::ThemeChange);
-        QApplication::sendEvent(widget, &event);
+        // emit a ThemeChange event to all widgets
+        const auto widgets = QApplication::allWidgets();
+        for(QWidget* const widget : widgets) {
+            // Qt5 added a QEvent::ThemeChange event.
+            QEvent event(QEvent::ThemeChange);
+            QApplication::sendEvent(widget, &event);
+        }
     }
 }
 
