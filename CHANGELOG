@@ -1,3 +1,7 @@
+lxqt-qtplugin-1.4.1 / 2024-27-3
+================================
+ * Make accept Qt5 applications font settings by Qt6
+
 lxqt-qtplugin-1.4.0 / 2023-11-05
 =================================
  * Just corrected a case of code readability and bumped the version.

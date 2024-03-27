@@ -89,6 +89,56 @@ void LXQtPlatformTheme::lazyInit()
     XdgIconLoader::instance()->setFollowColorScheme(iconFollowColorScheme_);
 }
 
+// Qt6 has changed "QFont::toString()" in a backward incompatible way, so that
+// the Qt5 version will show wrong fonts if the font is set by Qt6 This function
+// circumvents the problem when it's used instead of "QFont::fromString()".
+static inline bool fontFromString (QFont &f, const QString &str)
+{
+    const QChar comma(QLatin1Char(','));
+    QStringList l = str.split(comma);
+    if (l.size() <= 10)
+        return f.fromString(str);
+    else
+    {
+        l = l.mid (0, 10);
+        int weight = l.at (4).toInt();
+        switch (weight) {
+        case 100:
+            weight = 0;
+            break;
+        case 200:
+            weight = 12;
+            break;
+        case 300:
+            weight = 25;
+            break;
+        case 400:
+            weight = 50;
+            break;
+        case 500:
+            weight = 57;
+            break;
+        case 600:
+            weight = 63;
+            break;
+        case 700:
+            weight = 75;
+            break;
+        case 800:
+            weight = 81;
+            break;
+        case 900:
+            weight = 87;
+            break;
+        default:
+            weight = 50;
+            break;
+        }
+        l[4] = QString::number(weight);
+        return f.fromString(l.join(comma));
+    }
+}
+
 void LXQtPlatformTheme::loadSettings() {
     // QSettings is really handy. It tries to read from /etc/xdg/lxqt/lxqt.conf
     // as a fallback if a key is missing from the user config file ~/.config/lxqt/lxqt.conf.
@@ -233,15 +283,19 @@ void LXQtPlatformTheme::loadSettings() {
 
     // SystemFont
     fontStr_ = settings.value(QLatin1String("font")).toString();
+
     if(!fontStr_.isEmpty()) {
-        if(font_.fromString(fontStr_))
-            QApplication::setFont(font_); // it seems that we need to do this manually.
+        if(fontFromString(font_, fontStr_)) {
+            if(qobject_cast<QApplication *>(QCoreApplication::instance())) {
+                QApplication::setFont(font_); // it seems that we need to do this manually.
+            }
+        }
     }
 
     // FixedFont
     fixedFontStr_ = settings.value(QLatin1String("fixedFont")).toString();
     if(!fixedFontStr_.isEmpty()) {
-        fixedFont_.fromString(fixedFontStr_);
+        fontFromString(fixedFont_, fixedFontStr_);
     }
 
     // mouse
@@ -285,19 +339,18 @@ void LXQtPlatformTheme::onSettingsChanged() {
 
     loadSettings(); // reload the config file
 
-    if(style_ != oldStyle || paletteChanged_) // the widget style or palette is changed
+    auto app = qobject_cast<QApplication *>(QCoreApplication::instance());
+
+    if(app && (style_ != oldStyle || paletteChanged_)) // the widget style or palette is changed
     {
         // ask Qt5 to apply the new style
-        if(auto *app = qobject_cast<QApplication *>(QCoreApplication::instance()))
+        QApplication::setStyle(style_);
+        // Qt 5.15 needs this and it's safe otherwise
+        if(LXQtPalette_ != nullptr)
         {
-            QApplication::setStyle(style_);
-            // Qt 5.15 needs this and it's safe otherwise
-            if(LXQtPalette_ != nullptr)
-            {
-                QApplication::setPalette(*LXQtPalette_);
-                // the app should be polished because the style may have an internal palette
-                QApplication::style()->polish(app);
-            }
+            QApplication::setPalette(*LXQtPalette_);
+            // the app should be polished because the style may have an internal palette
+            QApplication::style()->polish(app);
         }
     }
 
@@ -320,19 +373,24 @@ void LXQtPlatformTheme::onSettingsChanged() {
         // all of the widgets will update their fonts.
         // FIXME: should we call the internal API: QApplicationPrivate::setFont() instead?
         // QGtkStyle does this internally.
-        fixedFont_.fromString(fixedFontStr_); // FIXME: how to set this to the app?
-        if(font_.fromString(fontStr_))
-            QApplication::setFont(font_);
+        fontFromString(fixedFont_, fixedFontStr_); // FIXME: how to set this to the app?
+        if(fontFromString(font_, fontStr_)) {
+            if(app) {
+                QApplication::setFont(font_);
+            }
+        }
     }
 
-    QApplication::setWheelScrollLines(wheelScrollLines_.toInt());
+    if(app) {
+        QApplication::setWheelScrollLines(wheelScrollLines_.toInt());
 
-    // emit a ThemeChange event to all widgets
-    const auto widgets = QApplication::allWidgets();
-    for(QWidget* const widget : widgets) {
-        // Qt5 added a QEvent::ThemeChange event.
-        QEvent event(QEvent::ThemeChange);
-        QApplication::sendEvent(widget, &event);
+        // emit a ThemeChange event to all widgets
+        const auto widgets = QApplication::allWidgets();
+        for(QWidget* const widget : widgets) {
+            // Qt5 added a QEvent::ThemeChange event.
+            QEvent event(QEvent::ThemeChange);
+            QApplication::sendEvent(widget, &event);
+        }
     }
 }
 
