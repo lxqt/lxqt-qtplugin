@@ -109,8 +109,12 @@ private:
     // mouse
     QVariant doubleClickInterval_;
     QVariant wheelScrollLines_;
+    // mouse cursor
+    QVariant mouseCursorTheme_;
+    QSize mouseCursorSize_;
     // keyboard
     QVariant cursorFlashTime_;
+
     QFileSystemWatcher *settingsWatcher_;
     QString settingsFile_;
 
