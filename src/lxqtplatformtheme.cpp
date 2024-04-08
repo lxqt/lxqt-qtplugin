@@ -255,6 +255,14 @@ void LXQtPlatformTheme::loadSettings() {
     // keyboard
     cursorFlashTime_ = settings.value(QLatin1String("cursorFlashTime"));
     settings.endGroup();
+
+    // mouse cursor
+    QSettings sessionSettings(QSettings::UserScope, QLatin1String("lxqt"), QLatin1String("session"));
+    sessionSettings.beginGroup(QStringLiteral("Mouse"));
+    mouseCursorTheme_ = sessionSettings.value(QLatin1String("cursor_theme"));
+    int curSize = sessionSettings.value(QLatin1String("cursor_size"), 16).toInt();
+    mouseCursorSize_ = QSize(curSize, curSize);
+    sessionSettings.endGroup();
 }
 
 // this is called whenever the config file is changed.
@@ -475,6 +483,10 @@ QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
         return wheelScrollLines_;
     case QPlatformTheme::ShowShortcutsInContextMenus:
         return QVariant(true);
+    case MouseCursorTheme:
+        return mouseCursorTheme_;
+    case MouseCursorSize:
+        return QVariant(mouseCursorSize_);
     default:
         break;
     }
