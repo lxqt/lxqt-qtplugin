@@ -456,7 +456,7 @@ QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
     case KeyboardScheme:
         return QVariant(X11KeyboardScheme);
     case UiEffects:
-        break;
+        return QVariant(static_cast<int>(HoverEffect));
     case SpellCheckUnderlineStyle:
         break;
     case IconPixmapSizes:
