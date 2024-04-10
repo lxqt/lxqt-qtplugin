@@ -10,7 +10,7 @@ With this plugin, all Qt-based programs can adopt settings of LXQt, such as the 
 
 ### Compiling source code
 
-Runtime dependencies are libdbusmenu-lxqt and [liblxqt](https://github.com/lxqt/liblxqt).  
+Runtime dependencies are [libdbusmenu-lxqt](https://github.com/lxqt/libdbusmenu-lxqt) and [liblxqt](https://github.com/lxqt/liblxqt).  
 Additional build dependencies are CMake and qttools, optionally Git to pull latest VCS checkouts.  
 
 Code configuration is handled by CMake. CMake variable `CMAKE_INSTALL_PREFIX` has to be set to `/usr` on most operating systems.  
