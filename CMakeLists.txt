@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.18.0 FATAL_ERROR)
 # CMP0000: Call the cmake_minimum_required() command at the beginning of the top-level
 # CMakeLists.txt file even before calling the project() command.
 # The cmake_minimum_required(VERSION) command implicitly invokes the cmake_policy(VERSION)
@@ -15,7 +15,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # Minimum Versions
 set(LXQTBT_MINIMUM_VERSION "2.0.0")
 set(QT_MINIMUM_VERSION "6.6.0")
-set(QTXDG_MINIMUM_VERSION "3.12.0")
+set(QTXDG_MINIMUM_VERSION "4.0.0")
 set(FMQT_MINIMUM_VERSION "2.0.0")
 
 find_package(Qt6DBus ${QT_MINIMUM_VERSION} REQUIRED)
