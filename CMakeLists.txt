@@ -41,5 +41,6 @@ mark_as_advanced(LIB_FM_QT_SONAME)
 
 include(LXQtPreventInSourceBuilds)
 include(LXQtCompilerSettings NO_POLICY_SCOPE)
+include(LXQtQueryQt)
 
 add_subdirectory(src)
