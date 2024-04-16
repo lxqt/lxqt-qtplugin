@@ -37,8 +37,6 @@ else()
 endif()
 mark_as_advanced(LIB_FM_QT_SONAME)
 
-# Patch Version 0
-
 include(LXQtPreventInSourceBuilds)
 include(LXQtCompilerSettings NO_POLICY_SCOPE)
 include(LXQtQueryQt)
