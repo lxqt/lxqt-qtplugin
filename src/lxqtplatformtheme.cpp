@@ -47,6 +47,8 @@
 #include <private/xdgiconloader/xdgiconloader_p.h>
 #include <QLibrary>
 
+#include <utility>
+
 
 // Function to create a new Fm::FileDialogHelper object.
 // This is dynamically loaded at runtime on demand from libfm-qt.
@@ -519,7 +521,7 @@ QStringList LXQtPlatformTheme::xdgIconThemePaths() const
         xdgDataDirs = QLatin1String("/usr/local/share/:/usr/share/");
     xdgDirs.append(xdgDataDirs);
 
-    for (const auto &s: xdgDirs) {
+    for (const auto &s: std::as_const(xdgDirs)) {
         const QStringList r = s.split(QLatin1Char(':'), Qt::SkipEmptyParts);
         for (const auto& xdgDir: r) {
             const QFileInfo xdgIconsDir(xdgDir + QStringLiteral("/icons"));
