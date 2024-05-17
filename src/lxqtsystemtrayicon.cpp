@@ -62,7 +62,7 @@ void SystemTrayMenu::insertMenuItem(QPlatformMenuItem *menuItem, QPlatformMenuIt
 
         if (SystemTrayMenuItem *oursBefore = qobject_cast<SystemTrayMenuItem*>(before))
         {
-            for (auto it = m_items.begin(); it != m_items.end(); ++it)
+            for (auto it = m_items.cbegin(); it != m_items.cend(); ++it)
             {
                 if (*it == oursBefore)
                 {
