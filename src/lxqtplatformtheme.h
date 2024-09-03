@@ -100,7 +100,8 @@ private:
     QString style_;
     QColor winColor_, baseColor_, highlightColor_,
            winTextColor_, textColor_, highlightedTextColor_,
-           linkColor_, linkVisitedColor_;
+           linkColor_, linkVisitedColor_,
+           tooltipBaseCol_, tooltipTextCol_;
     bool paletteChanged_;
     QString fontStr_;
     QFont font_;
