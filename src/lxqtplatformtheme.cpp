@@ -161,6 +161,16 @@ void LXQtPlatformTheme::loadSettings() {
     if (!paletteChanged_)
         paletteChanged_ = linkVisitedColor_.isValid() && color != linkVisitedColor_;
 
+    color = tooltipBaseCol_;
+    tooltipBaseCol_ = QColor::fromString(settings.value(QLatin1String("tooltip_base_color")).toString());
+    if (!paletteChanged_)
+        paletteChanged_ = tooltipBaseCol_.isValid() && color != tooltipBaseCol_;
+
+    color = tooltipTextCol_;
+    tooltipTextCol_ = QColor::fromString(settings.value(QLatin1String("tooltip_text_color")).toString());
+    if (!paletteChanged_)
+        paletteChanged_ = tooltipTextCol_.isValid() && color != tooltipTextCol_;
+
     if(paletteChanged_)
     {
         delete LXQtPalette_;
@@ -224,6 +234,10 @@ void LXQtPlatformTheme::loadSettings() {
             LXQtPalette_->setColor(QPalette::Link, linkColor_);
         if (linkVisitedColor_.isValid())
             LXQtPalette_->setColor(QPalette::LinkVisited, linkVisitedColor_);
+        if (tooltipBaseCol_.isValid())
+            LXQtPalette_->setColor(QPalette::ToolTipBase, tooltipBaseCol_);
+        if (tooltipTextCol_.isValid())
+            LXQtPalette_->setColor(QPalette::ToolTipText, tooltipTextCol_);
     }
     settings.endGroup();
 
