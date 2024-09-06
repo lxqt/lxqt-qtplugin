@@ -92,6 +92,7 @@ private:
     // LXQt settings
     QString iconTheme_;
     Qt::ToolButtonStyle toolButtonStyle_;
+    int toolBarIconSize_;
     bool singleClickActivate_;
     bool iconFollowColorScheme_;
 
