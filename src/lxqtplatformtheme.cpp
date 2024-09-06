@@ -113,6 +113,11 @@ void LXQtPlatformTheme::loadSettings() {
     else
         toolButtonStyle_ = static_cast<Qt::ToolButtonStyle>(value);
 
+    // toolbar icon size
+    toolBarIconSize_ = qBound(0, settings.value(QLatin1String("tool_bar_icon_size")).toInt(), 48);
+    if (toolBarIconSize_ < 16)
+        toolBarIconSize_ = 0; // let the style decide
+
     // single click activation
     singleClickActivate_ = settings.value(QLatin1String("single_click_activate")).toBool();
 
@@ -458,7 +463,7 @@ QVariant LXQtPlatformTheme::themeHint(ThemeHint hint) const {
     case ToolButtonStyle:
         return QVariant(toolButtonStyle_);
     case ToolBarIconSize:
-        break;
+        return QVariant(toolBarIconSize_);
     case ItemViewActivateItemOnSingleClick:
         return QVariant(singleClickActivate_);
     case SystemIconThemeName:
