@@ -1,3 +1,7 @@
+lxqt-qtplugin-2.2.0 / 2025-04-17
+=================================
+ * Bumped the version to 2.2.0 and updated the dependencies.
+
 lxqt-qtplugin-2.1.0 / 2024-11-05
 =================================
  * Use lxqt-build-tools functionality.
