@@ -281,7 +281,7 @@ void LXQtPlatformTheme::loadSettings() {
     QSettings sessionSettings(QSettings::UserScope, QLatin1String("lxqt"), QLatin1String("session"));
     sessionSettings.beginGroup(QStringLiteral("Mouse"));
     mouseCursorTheme_ = sessionSettings.value(QLatin1String("cursor_theme"));
-    int curSize = sessionSettings.value(QLatin1String("cursor_size"), 16).toInt();
+    int curSize = sessionSettings.value(QLatin1String("cursor_size"), 24).toInt();
     mouseCursorSize_ = QSize(curSize, curSize);
     sessionSettings.endGroup();
 }
