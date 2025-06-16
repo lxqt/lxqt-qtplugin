@@ -33,10 +33,13 @@ target_compile_definitions(qtlxqt
 )
 
 target_link_libraries(qtlxqt
-    Qt6::Widgets
-    Qt6::DBus
-    dbusmenu-lxqt
-    Qt6XdgIconLoader
+    PRIVATE
+        Qt6::GuiPrivate
+    PUBLIC
+        Qt6::Widgets
+        Qt6::DBus
+        dbusmenu-lxqt
+        Qt6XdgIconLoader
 )
 
 lxqt_query_qt(_QT_PLUGINS_DIR QT_INSTALL_PLUGINS)

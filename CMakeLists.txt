@@ -23,6 +23,11 @@ find_package(Qt6DBus ${QT_MINIMUM_VERSION} REQUIRED)
 find_package(Qt6LinguistTools ${QT_MINIMUM_VERSION} REQUIRED)
 find_package(Qt6Widgets ${QT_MINIMUM_VERSION} REQUIRED)
 find_package(Qt6XdgIconLoader ${QTXDG_MINIMUM_VERSION} REQUIRED)
+
+if (Qt6Gui_VERSION VERSION_GREATER_EQUAL "6.10.0")
+    find_package(Qt6GuiPrivate REQUIRED)
+endif()
+
 find_package(lxqt2-build-tools ${LXQTBT_MINIMUM_VERSION} REQUIRED)
 find_package(dbusmenu-lxqt ${DBUSMENU_MINIMUM_VERSION} REQUIRED)
 find_package(fm-qt6 ${FMQT_MINIMUM_VERSION} REQUIRED)
