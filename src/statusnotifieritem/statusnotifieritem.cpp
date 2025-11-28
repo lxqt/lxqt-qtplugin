@@ -97,7 +97,7 @@ void StatusNotifierItem::onMenuDestroyed()
 {
     mMenu = nullptr;
     setMenuPath(QLatin1String("/NO_DBUSMENU"));
-    mMenuExporter = nullptr; //mMenu is a QObject parent of the mMenuExporter
+    delete mMenuExporter; mMenuExporter = nullptr;
 }
 
 void StatusNotifierItem::setTitle(const QString &title)
@@ -250,7 +250,7 @@ void StatusNotifierItem::setContextMenu(QMenu* menu)
     if (nullptr != mMenu)
     {
         connect(mMenu, &QObject::destroyed, this, &StatusNotifierItem::onMenuDestroyed);
-        mMenuExporter = new DBusMenuExporter{this->menu().path(), mMenu, mSessionBus};
+        mMenuExporter = new DBusMenuExporter{this->menu().path(), mMenu, this, mSessionBus};
     }
 }
 
