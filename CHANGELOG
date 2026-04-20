@@ -1,3 +1,7 @@
+lxqt-qtplugin-2.4.0 / 2026-04-20
+=================================
+* Bumped the version to 2.4.0 and updated the dependencies.
+
 lxqt-qtplugin-2.3.0 / 2025-11-05
 =================================
  * Changed default cursor size from 16 to 24.
