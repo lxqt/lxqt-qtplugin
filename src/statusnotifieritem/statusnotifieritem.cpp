@@ -304,8 +304,22 @@ IconPixmapList StatusNotifierItem::iconToPixmapList(const QIcon& icon)
     IconPixmapList pixmapList;
 
     // long live KDE!
-    const QList<QSize> sizes = icon.availableSizes();
-    for (const QSize &size : sizes)
+    QList<QSize> sizes = icon.availableSizes();
+
+    if (sizes.isEmpty())
+    {
+        static const QList<QSize> fallbackSizes = {
+            QSize(16, 16), QSize(22, 22), QSize(24, 24),
+            QSize(32, 32), QSize(48, 48), QSize(64, 64)
+        };
+        for (const QSize &size : fallbackSizes)
+        {
+            if (!icon.actualSize(size).isEmpty())
+                sizes.append(size);
+        }
+    }
+
+    for (const QSize &size : std::as_const(sizes))
     {
         QImage image = icon.pixmap(size).toImage();
 
