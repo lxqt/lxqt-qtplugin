@@ -1,3 +1,7 @@
+lxqt-qtplugin-2.5.0 / 2026-11-05
+=================================
+ * Fixed a case where SVG tray icons would not appear if they did not belong to the icon theme (because `QIcon::availableSizes` is empty for them).
+
 lxqt-qtplugin-2.4.0 / 2026-04-20
 =================================
 * Bumped the version to 2.4.0 and updated the dependencies.
