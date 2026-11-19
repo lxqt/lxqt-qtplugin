@@ -23,7 +23,6 @@ add_library(qtlxqt MODULE ${qtlxqt_HDRS} ${qtlxqt_SRCS})
 
 target_compile_definitions(qtlxqt
     PRIVATE
-        "QT_NO_FOREACH"
         "LIB_FM_QT_SONAME=\"${LIB_FM_QT_SONAME}\""
 )
 
