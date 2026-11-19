@@ -1,8 +1,3 @@
-include_directories(
-    ${Qt6Gui_PRIVATE_INCLUDE_DIRS}
-    "${CMAKE_CURRENT_BINARY_DIR}"
-)
-
 set(qtlxqt_HDRS
     lxqtplatformtheme.h
     lxqtsystemtrayicon.h
